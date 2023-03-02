@@ -4,7 +4,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
-import time
 
 # Daily PreMatch events link.
 target_url = "https://www.ke.sportpesa.com/sports/football?sportId=1&section=today"
@@ -22,6 +21,18 @@ driver.maximize_window()
 try:
     # Scroll to the bottom to ensure all events load
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight)")
+
+    # Get a list with the number of available pages of events.
+    pagination = WebDriverWait(driver, 5).until(
+        EC.presence_of_element_located(
+            (By.CLASS_NAME, "event-list-pagination"))
+    )
+
+    pagination = driver.find_element(By.CLASS_NAME, "event-list-pagination")
+
+    next_buttons = pagination.find_elements(By.CLASS_NAME, "ng-binding")
+
+    available_pages = [item.text for item in next_buttons]
 
     # Initiate an empty array to append dictionaries containing event info
     result = []
@@ -46,16 +57,6 @@ try:
 
     for entry in result:
         print(entry)
-    pagination = WebDriverWait(driver, 5).until(
-        EC.presence_of_element_located(
-            (By.CLASS_NAME, "event-list-pagination"))
-    )
-
-    pagination = driver.find_element(By.CLASS_NAME, "event-list-pagination")
-
-    next_buttons = pagination.find_elements(By.CLASS_NAME, "ng-binding")
-
-    print([item.text for item in next_buttons])
 
 finally:
     driver.quit()
