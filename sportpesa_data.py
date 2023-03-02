@@ -13,6 +13,8 @@ DAILY_EVENTS_URL = "https://www.ke.sportpesa.com/sports/football?sportId=1&secti
 NEXT_PAGE_STATIC_URL = "https://www.ke.sportpesa.com/sports/football?sportId=1&section=today&paginationOffset="
 # Search Page Static url
 SEARCH_PAGE_STATIC_URL = "https://www.ke.sportpesa.com/search?sportId=1&text="
+# Class name to the cookies div.
+COOKIES_ACCEPT_DIV = "cookies-law-info-content"
 
 # Create a new ChromeDriver service object
 service = webdriver.chrome.service.Service(
@@ -36,16 +38,8 @@ def get_general_data() -> list:
     driver.get(DAILY_EVENTS_URL)
     driver.maximize_window()
 
-    # Accept Cookies --> cause why not.
-    cookie_div = WebDriverWait(driver, 5).until(
-        EC.presence_of_element_located((By.ID, "cookies-law-info-content"))
-    )
-
-    if cookie_div:
-        cookie_button = driver.find_element(By.TAG_NAME, "button")
-        cookie_button.click()
-    else:
-        print("Never found any cookie laws.")
+    # Accept Cookies --> cause why not do this too.
+    accept_cookies(driver, 5, COOKIES_ACCEPT_DIV)
 
     try:
         # Scroll to the bottom to ensure all events load
@@ -127,6 +121,8 @@ def search_fill_clean(arr) -> list:
     driver.get(HOME_PAGE_URL)
     driver.maximize_window()
 
+    accept_cookies(driver, 5, COOKIES_ACCEPT_DIV)
+
     try:
         for entry in arr:
             # Only search using the first team
@@ -162,6 +158,20 @@ def name_in_url_format(name) -> str:
     if not " " in name:
         return name
     return name.replace(" ", "%20")
+
+
+# Accepting cookies on this site:
+def accept_cookies(drv, _timeout, cookies_div) -> None:
+    cookie_div = WebDriverWait(drv, _timeout).until(
+        EC.presence_of_element_located((By.ID, cookies_div))
+    )
+
+    if cookie_div:
+        cookie_button = driver.find_element(By.TAG_NAME, "button")
+        cookie_button.click()
+    else:
+        print("Never found any cookie laws.")
+    return
 
 
 search_fill_clean(res)
