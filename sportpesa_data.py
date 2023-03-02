@@ -37,26 +37,37 @@ try:
     # Initiate an empty array to append dictionaries containing event info
     result = []
 
-    # Get all the event rows
-    event_rows = driver.find_elements(By.CLASS_NAME, "event-markets-count-4")
+    event_totals = 15
+    # Get content from as many pages as ones available
+    for idx in range(len(available_pages[1:])):
+        # Get all the event rows
+        event_rows = driver.find_elements(
+            By.CLASS_NAME, "event-markets-count-4")
 
-    # Get the start_time, ID and names of teams in each the match
-    for event in event_rows:
-        event_info = event.find_element(By.CLASS_NAME, "event-info")
-        entry_data = event_info.text.split("\n")
+        # Get the start_time, ID and names of teams in each the match
+        for event in event_rows:
+            event_info = event.find_element(By.CLASS_NAME, "event-info")
+            entry_data = event_info.text.split("\n")
 
-        event_names = event.find_element(By.CLASS_NAME, "event-names")
-        entry_names = event_names.text.split("\n")
+            event_names = event.find_element(By.CLASS_NAME, "event-names")
+            entry_names = event_names.text.split("\n")
 
-        entry = {}
-        entry["teams"] = f"{entry_names[0]} vs {entry_names[1]}"
-        entry["start_time"] = f"{entry_data[0]}"
-        entry["event_id"] = entry_data[2]
+            entry = {}
+            entry["teams"] = f"{entry_names[0]} vs {entry_names[1]}"
+            entry["start_time"] = f"{entry_data[0]}"
+            entry["event_id"] = entry_data[2]
 
-        result.append(entry)
+            result.append(entry)
 
-    for entry in result:
-        print(entry)
+        # Get the URL for the next page
+        next_page_url = f"https://www.ke.sportpesa.com/sports/football?sportId=1&section=today&paginationOffset={event_totals}"
+
+        # Navigate to the next page
+        driver.get(next_page_url)
+
+        event_totals += 15          # Total number of events sportpesa loads per page
 
 finally:
+    for entry in result:
+        print(entry)
     driver.quit()
