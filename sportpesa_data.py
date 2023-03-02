@@ -106,14 +106,10 @@ This function (search_fill_clean) loops through the general data result and does
     entry to include this information as an object.
     - Since some events lack this market, it scraps that whole entry from the resultant array as it is of no use.
     - Returns a comprehensive array of dictionaries with teams, start_time, ID, sp_markets (another dictionary).
-"""
 
-# res = get_general_data()
-res = [
-    {'teams': 'AL AIN vs DIBBA AL FUJAIRAH',
-        'start_time': '16:30', 'event_id': 5123},
-    {'teams': 'AL-SHAMAL vs QATAR SC', 'start_time': '16:55', 'event_id': 1639}
-]
+    # Input --> [{'teams': 'AL-SHABBAB vs AL-BUDAIYA', 'start_time': '18:30', 'event_id': 3226}]
+    # Output --> [{'teams': 'AL-SHABBAB vs AL-BUDAIYA', 'start_time': '18:30', 'event_id': 3226, 'SP': {'GG': 1.97, 'NO_GG': 1.69}}...]
+"""
 
 
 def search_fill_clean(arr) -> list:
@@ -159,25 +155,26 @@ def search_fill_clean(arr) -> list:
                 )
 
                 markets_result = markets.text.split("\n")
-                print(list(enumerate(markets_result)))
 
                 if markets_result[0] != "BOTH TEAMS TO SCORE":
                     arr.remove(entry)
-                    print(f"{entry} has no desired market, thus removed.")
+                    print(
+                        f"\n{entry['teams']} - has no desired market, thus removed.")
                 else:
                     odds = {"YES": 0, "NO": 0}
                     odds["YES"] = float(markets_result[2])
                     odds["NO"] = float(markets_result[4])
 
-                # Update the entry with the newly fetched values
-                entry["SP"] = {
-                    "GG": odds["YES"],
-                    "NO_GG": odds["NO"]
-                }
+                    # Update the entry with the newly fetched values
+                    entry["SP"] = {
+                        "GG": odds["YES"],
+                        "NO_GG": odds["NO"]
+                    }
             else:
                 # This particular event has probably already started and is not in the prematch bet events.
                 arr.remove(entry)
-                print(f"Removed element {entry} from the array...")
+                print(
+                    f"Removed the event {entry['teams']} from the array. It might have already started.")
                 continue
     finally:
         driver.quit()
@@ -209,6 +206,3 @@ def accept_cookies(drv, _timeout, cookies_div) -> None:
     else:
         print("Never found any cookie laws.")
     return
-
-
-print(search_fill_clean(res))
