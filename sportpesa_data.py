@@ -34,6 +34,17 @@ def get_general_data():
     driver.get(DAILY_EVENTS_URL)
     driver.maximize_window()
 
+    # Accept Cookies --> cause why not.
+    cookie_div = WebDriverWait(driver, 5).until(
+        EC.presence_of_element_located((By.ID, "cookies-law-info-content"))
+    )
+
+    if cookie_div:
+        cookie_button = driver.find_element(By.TAG_NAME, "button")
+        cookie_button.click()
+    else:
+        print("Never found any cookie laws.")
+
     try:
         # Scroll to the bottom to ensure all events load
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight)")
@@ -57,6 +68,7 @@ def get_general_data():
         event_totals = 15
         # Get content from as many pages as ones available
         for idx in range(len(available_pages[1:])):
+
             # Get all the event rows
             event_rows = driver.find_elements(
                 By.CLASS_NAME, "event-markets-count-4")
@@ -88,3 +100,8 @@ def get_general_data():
         driver.quit()
 
     return result
+
+
+# Second function to clean and add more details to the result received above.
+def search_fill_clean(arr):
+    pass
