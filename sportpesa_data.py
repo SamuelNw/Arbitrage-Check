@@ -86,7 +86,7 @@ def get_general_data() -> list:
                 entry = {}
                 entry["teams"] = f"{entry_names[0]} vs {entry_names[1]}"
                 entry["start_time"] = f"{entry_data[0]}"
-                entry["event_id"] = entry_data[2]
+                entry["event_id"] = int(entry_data[2].split(" ")[1])
 
                 result.append(entry)
 
@@ -118,7 +118,7 @@ This function (search_fill_clean) loops through the general data result and does
 res = [
     {'teams': 'AL AIN vs DIBBA AL FUJAIRAH',
         'start_time': '16:30', 'event_id': 'ID: 5123'},
-    {'teams': 'AL-SHAMAL vs QATAR SC', 'start_time': '16:55', 'event_id': 'ID: 1639'}
+    {'teams': 'AL-SHAMAL vs QATAR SC', 'start_time': '16:55', 'event_id': 1639}
 ]
 
 
@@ -143,6 +143,7 @@ def search_fill_clean(arr) -> list:
             # Affirm that it is the same event as the one intended (By checking the ID).
             _event_id = match.find_element(
                 By.CLASS_NAME, "event-info").text.split("\n")[2]
+            _event_id = int(_event_id.split(" ")[1])
             if _event_id == entry['event_id']:
                 pass
     finally:
