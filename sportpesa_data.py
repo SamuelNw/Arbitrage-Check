@@ -11,6 +11,8 @@ HOME_PAGE_URL = "https://www.ke.sportpesa.com/sports/football?sportId=1&section=
 DAILY_EVENTS_URL = "https://www.ke.sportpesa.com/sports/football?sportId=1&section=today"
 # Next Page Static url
 NEXT_PAGE_STATIC_URL = "https://www.ke.sportpesa.com/sports/football?sportId=1&section=today&paginationOffset="
+# Search Page Static url
+SEARCH_PAGE_STATIC_URL = "https://www.ke.sportpesa.com/search?sportId=1&text="
 
 # Create a new ChromeDriver service object
 service = webdriver.chrome.service.Service(
@@ -29,7 +31,7 @@ General data here refers to:
 """
 
 
-def get_general_data():
+def get_general_data() -> list:
 
     driver.get(DAILY_EVENTS_URL)
     driver.maximize_window()
@@ -103,5 +105,62 @@ def get_general_data():
 
 
 # Second function to clean and add more details to the result received above.
-def search_fill_clean(arr):
-    pass
+"""
+This function (search_fill_clean) loops through the general data result and does the following on each entry:
+    - Searches for the specific event on sportpesa.com. 
+    - If it finds the event and it is yet to start, get the desired markets (GG and NO_GG) and update that
+    entry to include this information as an object.
+    - Since some events lack this market, it scraps that whole entry from the resultant array as it is of no use.
+    - Returns a comprehensive array of dictionaries with teams, start_time, ID, sp_markets (another dictionary).
+"""
+
+# res = get_general_data()
+res = [
+    {'teams': 'AL AIN vs DIBBA AL FUJAIRAH',
+        'start_time': '16:30', 'event_id': 'ID: 5123'},
+    {'teams': 'AL-SHAMAL vs QATAR SC', 'start_time': '16:55', 'event_id': 'ID: 1639'}
+]
+
+
+def search_fill_clean(arr) -> list:
+
+    driver.get(HOME_PAGE_URL)
+    driver.maximize_window()
+
+    try:
+        for entry in arr:
+            # Only search using the first team
+            search_name = name_in_url_format(entry["teams"].split(" vs ")[0])
+
+            driver.get(SEARCH_PAGE_STATIC_URL + search_name)
+
+            wait = WebDriverWait(driver, 2)
+            match = wait.until(
+                EC.presence_of_element_located(
+                    (By.CLASS_NAME, "event-markets-count-4"))
+            )
+
+            # Affirm that it is the same event as the one intended (By checking the ID).
+            _event_id = match.find_element(
+                By.CLASS_NAME, "event-info").text.split("\n")[2]
+            if _event_id == entry['event_id']:
+                pass
+    finally:
+        driver.quit()
+
+    return arr
+
+
+# Get an input format of the search term as required.
+def name_in_url_format(name) -> str:
+    """
+    Info: The dynamic part of the search url.
+    - If the name has no spaces in it, it goes as is.
+    - If any space is present, replace it with the string '%20' --> what the target site does.
+    """
+    if not " " in name:
+        return name
+    return name.replace(" ", "%20")
+
+
+search_fill_clean(res)
