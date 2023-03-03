@@ -70,6 +70,32 @@ def add_betika_data(arr):
                 break
 
         # get the right markets.
+        more_markets_link = WebDriverWait(event, 5).until(
+            EC.element_to_be_clickable((By.TAG_NAME, "a"))
+        )
+        more_markets_link.click()
+
+        market_rows = ex_wait.until(
+            EC.presence_of_all_elements_located(
+                (By.CLASS_NAME, "market"))
+        )
+
+        odds = {}
+        is_found = False
+        for market in market_rows:
+            # target markets found
+            market_text = market.text.split("\n")
+            if market_text[0] == "Both Teams To Score (Gg/ng)":
+                odds["GG"] = float(market_text[2])
+                odds["NO_GG"] = float(market_text[4])
+                is_found = True
+                break
+
+        if is_found == False:
+            # no gg markets found, thus remove the whole event from the input arr
+            pass
+
+        # Update entry:
         pass
 
     finally:
