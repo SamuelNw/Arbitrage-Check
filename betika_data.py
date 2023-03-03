@@ -56,7 +56,20 @@ def add_betika_data(arr):
             " vs ")[0])
         _input.send_keys(Keys.RETURN)
 
-        # get target results
+        # get target results:
+        # Affirm it is the target event.
+        event_rows = ex_wait.until(
+            EC.presence_of_all_elements_located(
+                (By.CLASS_NAME, "prebet-match"))
+        )
+        for event in event_rows:
+            time_div = event.find_element(By.CLASS_NAME, "time")
+            start_time = time_div.text.strip().split(", ")[1]
+
+            if start_time == arr[0]["start_time"]:
+                break
+
+        # get the right markets.
         pass
 
     finally:
