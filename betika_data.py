@@ -96,7 +96,10 @@ def add_betika_data(arr):
             pass
 
         # Update entry:
-        pass
+        arr[0]["BK"] = {
+            "GG": odds["GG"],
+            "NO_GG": odds["NO_GG"]
+        }
 
     finally:
         driver.quit()
@@ -104,4 +107,4 @@ def add_betika_data(arr):
     return arr
 
 
-add_betika_data(sample_input_arr)
+print(add_betika_data(sample_input_arr))
