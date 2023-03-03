@@ -51,9 +51,6 @@ def get_general_data() -> list:
                 (By.CLASS_NAME, "event-list-pagination"))
         )
 
-        pagination = driver.find_element(
-            By.CLASS_NAME, "event-list-pagination")
-
         next_buttons = pagination.find_elements(By.CLASS_NAME, "ng-binding")
 
         available_pages = [item.text for item in next_buttons]
