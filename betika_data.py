@@ -38,16 +38,26 @@ def add_betika_data(arr):
     driver.maximize_window()
 
     try:
-        wait = WebDriverWait(driver, 5)
+        ex_wait = WebDriverWait(driver, 5)
 
         # go to the search page
-        search_link = wait.until(
+        search_link = ex_wait.until(
             EC.visibility_of_element_located((By.LINK_TEXT, "Search"))
         )
         search_link.click()
-        time.sleep(2)
 
         # work with the input
+        input_container = ex_wait.until(
+            EC.presence_of_element_located((By.CLASS_NAME, "search__input__container"
+                                            ))
+        )
+        _input = input_container.find_element(By.TAG_NAME, "input")
+        _input.send_keys(arr[0]["teams"].split(
+            " vs ")[0])
+        _input.send_keys(Keys.RETURN)
+
+        # get target results
+        pass
 
     finally:
         driver.quit()
