@@ -129,12 +129,17 @@ def search_fill_clean(arr) -> list:
                     (By.CLASS_NAME, "event-markets-count-4"))
             )
 
+            # Also, if the game has started, the event-markets-count-4 is no longer present.
+            if not match:
+                print(f"Match {entry['teams']} has started. Removing it..")
+                arr.remove(entry)
+                continue
+
             # Affirm that it is the same event as the one intended (By checking the ID).
             _event_id = match.find_element(
                 By.CLASS_NAME, "event-info").text.split("\n")[2]
             _event_id = int(_event_id.split(" ")[1])
             if _event_id == entry['event_id']:
-                print("Found element. Working...")
                 more_markets = match.find_element(
                     By.CLASS_NAME, "event-extra")
                 more_markets.click()
