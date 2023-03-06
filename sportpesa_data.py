@@ -87,17 +87,15 @@ def get_sportpesa_data() -> list:
 
             event_totals += 15          # Total number of events sportpesa loads per page
 
-            if idx > 2:
+            if idx == len(available_pages) - 1:
                 driver.quit()
-                break
-
-        print(f"Working with\n, {result}")
-
-        print("\n" * 3)
 
         # refill result if result is not empty
         if result:
+            print(
+                f"Working with a list of {len(result)} entries. Hang tight...")
             result = search_fill_clean_sp.search_fill_clean(result)
+            print("Process Completed.")
         else:
             print("result is empty or invalid.")
 
