@@ -33,8 +33,8 @@ def add_betika_data(arr) -> list:
         for entry in arr:
             # Skip and Eliminate any started events.
             current_time = datetime.now().strftime("%H:%M")
-            if entry["start_time"] > current_time:
-                print(f"{entry} has already started. Removing event.")
+            if entry["start_time"] < current_time:
+                print(f"{entry['teams']} has already started. Removing event.")
                 arr.remove(entry)
                 continue
 
