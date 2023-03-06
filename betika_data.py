@@ -32,7 +32,7 @@ sample_input_arr = [
 ]
 
 
-def add_betika_data(arr):
+def add_betika_data(arr) -> list:
     driver.get(HOME_PAGE_URL)
     driver.maximize_window()
 
@@ -52,8 +52,7 @@ def add_betika_data(arr):
                                                 ))
             )
             _input = input_container.find_element(By.TAG_NAME, "input")
-            _input.send_keys(entry["teams"].split(
-                " vs ")[0])
+            _input.send_keys(clean_search_input(entry["teams"]))
             _input.send_keys(Keys.RETURN)
 
             # get target results:
@@ -112,4 +111,44 @@ def add_betika_data(arr):
     return arr
 
 
-print(add_betika_data(sample_input_arr))
+# Clean search name
+def clean_search_input(string) -> str:
+    """
+    Info: The Betika site has the following limitations regarding team names searched:
+        - It only returns results for the accurately spelt names.
+        - No word under 4 characters really return accurate results.
+        - Mostly shortens team names with more than one word.
+        - Strings like 'U20', 'U23' are unacceptable
+
+    Implemented solution:
+        - First check the name of the first team:
+            - if it has no spaces and is longer than four characters, use it.
+            - if it has a space, get the longest word of those present, and these
+            longest words must be longer than 3 characters.
+        - If none of those work, do the same check for the second name.
+    """
+
+    str_arr = string.split(" vs ")
+    first_name = str_arr[0]
+    second_name = str_arr[1]
+
+    # check first name:
+    if not " " in first_name and len(first_name) > 3:
+        return first_name
+
+    if " " in first_name:
+        longest_word = max(first_name.split(" "), key=len)
+        if len(longest_word) >= 4:
+            return longest_word
+
+    # Check second name
+    if not " " in second_name and len(second_name) > 3:
+        return second_name
+
+    if " " in second_name:
+        longest_word = max(second_name.split(" "), key=len)
+        if len(longest_word) >= 4:
+            return longest_word
+
+
+# print(add_betika_data(sample_input_arr))
