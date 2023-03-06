@@ -79,7 +79,9 @@ def add_betika_data(arr) -> list:
                         )
                         break
             else:
-                print(f"no results for that {entry['teams']}")
+                print(
+                    f"No results for that {entry['teams']} on betika. Removing it...")
+                arr.remove(entry)
                 continue
 
             odds = {}
@@ -95,13 +97,17 @@ def add_betika_data(arr) -> list:
 
             if is_found == False:
                 # no gg markets found, thus remove the whole event from the input arr
-                pass
+                print(
+                    f"Gg markets for {entry['teams']} not found. Removing entry...")
+                arr.remove(entry)
+                continue
 
             # Update entry:
-            entry["BK"] = {
-                "GG": odds["GG"],
-                "NO_GG": odds["NO_GG"]
-            }
+            if odds:
+                entry["BK"] = {
+                    "GG": odds["GG"],
+                    "NO_GG": odds["NO_GG"]
+                }
 
             driver.get(HOME_PAGE_URL)
 
