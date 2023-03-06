@@ -52,7 +52,8 @@ def add_betika_data(arr) -> list:
                 EC.presence_of_element_located((By.CLASS_NAME, "search__input__container"
                                                 ))
             )
-            _input = input_container.find_element(By.TAG_NAME, "input")
+            _input = WebDriverWait(input_container, 5).until(
+                EC.presence_of_element_located((By.TAG_NAME, "input")))
             _input.send_keys(clean_search_input(entry["teams"]))
             _input.send_keys(Keys.RETURN)
 
