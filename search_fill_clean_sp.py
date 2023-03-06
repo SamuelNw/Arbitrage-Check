@@ -98,8 +98,6 @@ def search_fill_clean(arr) -> list:
                         "NO_GG": odds["NO"]
                     }
 
-                    # show result
-                    print(entry)
             else:
                 # This particular event has probably already started and is not in the prematch bet events.
                 arr.remove(entry)
