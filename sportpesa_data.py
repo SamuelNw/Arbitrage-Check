@@ -119,3 +119,9 @@ def accept_cookies(drv, _timeout, cookies_div) -> None:
     else:
         print("Never found any cookie laws.")
     return
+
+
+res = get_general_data()
+
+for idx, entry in enumerate(res):
+    print(f"{idx} : {entry}")
