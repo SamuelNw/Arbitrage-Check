@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
+from datetime import datetime
 
 # Betika Home Page Url
 HOME_PAGE_URL = "https://www.betika.com/en-ke/"
@@ -17,18 +18,10 @@ service = webdriver.chrome.service.Service(
 driver = webdriver.Chrome(service=service)
 
 sample_input_arr = [
-    {
-        "teams": "REAL SOCIEDAD vs CADIZ CF",
-        "start_time": "23:00",
-        "event_id": 5871,
-        "SP": {"GG": 2.38, "NO_GG": 1.51}
-    },
-    {
-        "teams": "NAPOLI vs LAZIO",
-        "start_time": "22:45",
-        "event_id": 2083,
-        "SP": {"GG": 2.50, "NO_GG": 1.42}
-    }
+    {'teams': 'HAPOEL ACRE vs HAPOEL PETAH TIKVA', 'start_time': '20:00',
+        'event_id': 5858, 'SP': {'GG': 1.91, 'NO_GG': 1.74}},
+    {'teams': 'WALDHOF MANNHEIM vs SV ELVERSBERG', 'start_time': '21:00',
+        'event_id': 2868, 'SP': {'GG': 1.53, 'NO_GG': 2.25}}
 ]
 
 
@@ -38,6 +31,13 @@ def add_betika_data(arr) -> list:
 
     try:
         for entry in arr:
+            # Skip and Eliminate any started events.
+            current_time = datetime.now().strftime("%H:%M")
+            if entry["start_time"] > current_time:
+                print(f"{entry} has already started. Removing event.")
+                arr.remove(entry)
+                continue
+
             ex_wait = WebDriverWait(driver, 5)
 
             # go to the search page
