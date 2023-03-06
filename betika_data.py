@@ -6,6 +6,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 from datetime import datetime
+import random
 
 # Betika Home Page Url
 HOME_PAGE_URL = "https://www.betika.com/en-ke/"
@@ -124,7 +125,7 @@ def clean_search_input(string) -> str:
     """
     Info: The Betika site has the following limitations regarding team names searched:
         - It only returns results for the accurately spelt names.
-        - No word under 4 characters really return accurate results.
+        - No word under 4 characters really returns accurate results.
         - Mostly shortens team names with more than one word.
         - Strings like 'U20', 'U23' are unacceptable
 
@@ -134,6 +135,7 @@ def clean_search_input(string) -> str:
             - if it has a space, get the longest word of those present, and these
             longest words must be longer than 3 characters.
         - If none of those work, do the same check for the second name.
+        - Randomly pick any three letter word available at that instance and take chances on it lol.
     """
 
     str_arr = string.split(" vs ")
@@ -158,5 +160,9 @@ def clean_search_input(string) -> str:
         if len(longest_word) >= 4:
             return longest_word
 
+    # Worst case scenario eg --> "FC OSS vs FC AIK"
+    random_idx = random.randint(0, 1)
+    return max(str_arr[random_idx].split(" "), key=len)
 
-# print(add_betika_data(sample_input_arr))
+
+print(add_betika_data(sample_input_arr))
