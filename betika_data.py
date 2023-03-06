@@ -66,7 +66,7 @@ def add_betika_data(arr) -> list:
                     time_div = event.find_element(By.CLASS_NAME, "time")
                     start_time = time_div.text.strip().split(", ")[1]
 
-                    if start_time == arr[0]["start_time"]:
+                    if start_time == entry["start_time"]:
                         # get the right markets.
                         more_markets_link = WebDriverWait(event, 5).until(
                             EC.element_to_be_clickable((By.TAG_NAME, "a"))
