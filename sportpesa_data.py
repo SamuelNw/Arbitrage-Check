@@ -31,7 +31,7 @@ General data here refers to:
 """
 
 
-def get_general_data() -> list:
+def get_sportpesa_data() -> list:
 
     driver.get(DAILY_EVENTS_URL)
     driver.maximize_window()
@@ -121,7 +121,7 @@ def accept_cookies(drv, _timeout, cookies_div) -> None:
     return
 
 
-res = get_general_data()
+res = get_sportpesa_data()
 
 for idx, entry in enumerate(res):
     print(f"{idx} : {entry}")
