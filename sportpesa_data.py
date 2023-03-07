@@ -8,9 +8,9 @@ from webdriver_manager.chrome import ChromeDriverManager
 import search_fill_clean_sp
 
 # Daily PreMatch events link.
-DAILY_EVENTS_URL = "https://www.ke.sportpesa.com/sports/football?sportId=1&section=today"
+DAILY_EVENTS_URL = "https://www.ke.sportpesa.com/en/sports-betting/football-1/today-games/"
 # Next Page Static url
-NEXT_PAGE_STATIC_URL = "https://www.ke.sportpesa.com/sports/football?sportId=1&section=today&paginationOffset="
+NEXT_PAGE_STATIC_URL = "https://www.ke.sportpesa.com/en/sports-betting/football-1/today-games/?paginationOffset="
 # Class name to the cookies div.
 COOKIES_ACCEPT_DIV = "cookies-law-info-content"
 
