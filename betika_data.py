@@ -81,6 +81,11 @@ def add_betika_data(arr) -> list:
                                 (By.CLASS_NAME, "market"))
                         )
                         break
+                    else:
+                        print(
+                            f"{entry['teams']} are absent. Setting value to None")
+                        entry["BK"] = None
+                        continue
             else:
                 print(
                     f"No results for that {entry['teams']} on betika. 'BK' value shall equal None")
@@ -126,14 +131,16 @@ def clean_search_input(string) -> str:
     Info: The Betika site has the following limitations regarding team names searched:
         - It only returns results for the accurately spelt names.
         - No word under 4 characters really returns accurate results.
-        - Mostly shortens team names with more than one word.
+        - Mostly shortens team names with more than one word (If both names are longer
+        than 4 characters each, they shorten the longest and use the other).
         - Strings like 'U20', 'U23' are unacceptable
 
     Implemented solution:
         - First check the name of the first team:
             - if it has no spaces and is longer than four characters, use it.
             - if it has a space, get the longest word of those present, and these
-            longest words must be longer than 3 characters.
+            longest words must be longer than 3 characters and shorter than 10 
+            characters, else just use the next word.
         - If none of those work, do the same check for the second name.
         - Randomly pick any three letter word available at that instance and take chances on it lol.
     """
@@ -148,7 +155,8 @@ def clean_search_input(string) -> str:
 
     if " " in first_name:
         longest_word = max(first_name.split(" "), key=len)
-        if len(longest_word) >= 4:
+        len_longest = len(longest_word)
+        if len_longest >= 4 and len_longest <= 9:
             return longest_word
 
     # Check second name
