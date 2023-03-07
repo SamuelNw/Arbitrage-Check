@@ -24,8 +24,6 @@ HOME_PAGE_URL = "https://www.ke.sportpesa.com/sports/football?sportId=1&section=
 SEARCH_PAGE_STATIC_URL = "https://www.ke.sportpesa.com/search?sportId=1&text="
 # Class name to the cookies div.
 COOKIES_ACCEPT_DIV = "cookies-law-info-content"
-# Direct link to match details
-DIRECT_MARKETS_STATIC_URL = "https://www.ke.sportpesa.com/games/4412531/markets?sportId=1&section=global_search&text="
 
 
 # Create a new ChromeDriver service object
@@ -48,36 +46,64 @@ def search_fill_clean(arr) -> list:
             # Only search using the first team
             search_name = name_in_url_format(entry["teams"].split(" vs ")[0])
 
-            driver.get(DIRECT_MARKETS_STATIC_URL + search_name)
+            driver.get(SEARCH_PAGE_STATIC_URL + search_name)
 
-            # Search for divs with the gg market
-            """
-            As far as I know, the gg/nogg markets div is not the only one with the below class name
-            but it shall always be the first div on the page, as long as that event has these markets. Thus, to check
-            and eliminate events without this market, the first value of the returned elements text has to be:
-            'BOTH TEAMS TO SCORE'.
-            """
-            markets = WebDriverWait(driver, 5).until(
+            wait = WebDriverWait(driver, 5)
+            match = wait.until(
                 EC.presence_of_element_located(
-                    (By.CLASS_NAME, "event-market-columns-2"))
+                    (By.CLASS_NAME, "event-markets-count-4"))
             )
 
-            markets_result = markets.text.split("\n")
+            # Also, if the game has started, the event-markets-count-4 is no longer present.
+            if not match:
+                print(f"Match {entry['teams']} has started. Removing it..")
+                arr.remove(entry)
+                continue
 
-            if markets_result[0] != "BOTH TEAMS TO SCORE":
+            # Affirm that it is the same event as the one intended (By checking the ID).
+            _event_id = match.find_element(
+                By.CLASS_NAME, "event-info").text.split("\n")[2]
+            _event_id = int(_event_id.split(" ")[1])
+            if _event_id == entry['event_id']:
+                more_markets = match.find_element(
+                    By.CLASS_NAME, "event-extra")
+                more_markets.click()
+
+                # Search for divs with the gg market
+                """
+                As far as I know, the gg/nogg markets div is not the only one with the below class name
+                but it shall always be the first div on the page, as long as that event has these markets. Thus, to check
+                and eliminate events without this market, the first value of the returned elements text has to be:
+                'BOTH TEAMS TO SCORE'.
+                """
+                markets = WebDriverWait(driver, 5).until(
+                    EC.presence_of_element_located(
+                        (By.CLASS_NAME, "event-market-columns-2"))
+                )
+
+                markets_result = markets.text.split("\n")
+
+                if markets_result[0] != "BOTH TEAMS TO SCORE":
+                    arr.remove(entry)
+                    print(
+                        f"\n{entry['teams']} - has no desired market, thus removed.")
+                else:
+                    odds = {"YES": 0, "NO": 0}
+                    odds["YES"] = float(markets_result[2])
+                    odds["NO"] = float(markets_result[4])
+
+                    # Update the entry with the newly fetched values
+                    entry["SP"] = {
+                        "GG": odds["YES"],
+                        "NO_GG": odds["NO"]
+                    }
+
+            else:
+                # This particular event has probably already started and is not in the prematch bet events.
                 arr.remove(entry)
                 print(
-                    f"\n{entry['teams']} - has no desired market, thus removed.")
-            else:
-                odds = {"YES": 0, "NO": 0}
-                odds["YES"] = float(markets_result[2])
-                odds["NO"] = float(markets_result[4])
-
-                # Update the entry with the newly fetched values
-                entry["SP"] = {
-                    "GG": odds["YES"],
-                    "NO_GG": odds["NO"]
-                }
+                    f"Removed the event {entry['teams']} from the array. It might have already started.")
+                continue
 
     finally:
         driver.quit()
