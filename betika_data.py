@@ -18,13 +18,6 @@ service = webdriver.chrome.service.Service(
 
 driver = webdriver.Chrome(service=service)
 
-sample_input_arr = [
-    {'teams': 'HAPOEL ACRE vs HAPOEL PETAH TIKVA', 'start_time': '20:00',
-        'event_id': 5858, 'SP': {'GG': 1.91, 'NO_GG': 1.74}},
-    {'teams': 'WALDHOF MANNHEIM vs SV ELVERSBERG', 'start_time': '21:00',
-        'event_id': 2868, 'SP': {'GG': 1.53, 'NO_GG': 2.25}}
-]
-
 
 def add_betika_data(arr) -> list:
     driver.get(HOME_PAGE_URL)
@@ -171,6 +164,3 @@ def clean_search_input(string) -> str:
     # Worst case scenario eg --> "FC OSS vs FC AIK"
     random_idx = random.randint(0, 1)
     return max(str_arr[random_idx].split(" "), key=len)
-
-
-print(add_betika_data(sample_input_arr))
