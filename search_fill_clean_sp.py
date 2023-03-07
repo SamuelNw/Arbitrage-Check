@@ -48,7 +48,9 @@ def search_fill_clean(arr) -> list:
 
             driver.get(SEARCH_PAGE_STATIC_URL + search_name)
 
-            wait = WebDriverWait(driver, 3)
+            driver.execute_script("window.scrollBy(0, 100)")
+
+            wait = WebDriverWait(driver, 5)
             match = wait.until(
                 EC.presence_of_element_located(
                     (By.CLASS_NAME, "event-markets-count-4"))
