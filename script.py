@@ -215,7 +215,9 @@ def calculate_arbitrage(arr) -> list:
     - In case you are lucky enough:
         - Profit calculation is done as follows (Here, we use ksh 50,000):
             # Profit = Investment - ((Investment / A_odds) + (Investment / B_odds))           
-
+        - Calculation of stake on individual outcome using the same investment amount:
+            # Outcome_A_stake = Investment / A_odds, 
+            # Outcome_B_stake = Investment / B_odds
     """
 
     count = 0
@@ -238,8 +240,15 @@ def calculate_arbitrage(arr) -> list:
         arbitrage_percentage = round(((1/gg) * 100) + ((1/no_gg) * 100), 2)
         entry["Arb_Percentage"] = arbitrage_percentage
         if arbitrage_percentage < 100.00:
+            stakes = calculate_stakes(gg, no_gg)
+            entry["Stakes"] = {
+                "GG": stakes[0],
+                "NO_GG": stakes[1]
+            }
+
             _profit = calculate_profit(gg, no_gg)
             entry["Profit"] = _profit
+
             arbs.append(entry)
             count += 1
 
@@ -249,6 +258,9 @@ def calculate_arbitrage(arr) -> list:
     if arbs:
         for i in arbs:
             print(i)
+            print("\n-----------ANALYSIS----------\n")
+            print(
+                f"Stake on GG: {i['Stakes']['GG']} \nStake on NO_GG: {i['Stakes']['NO_GG']}")
             print(f"Profit from Ksh {INV} = Ksh {i['Profit']}")
     print("\n" * 3)
 
@@ -257,6 +269,13 @@ def calculate_arbitrage(arr) -> list:
 def calculate_profit(A, B) -> float:
     profit = round(INV - ((INV / A) + (INV / B)), 2)
     return profit
+
+
+# Calculating stakes
+def calculate_stakes(A, B) -> list:
+    A_stake = round(INV / A, 2)
+    B_stake = round(INV / B, 2)
+    return [A_stake, B_stake]
 
 
 calculate_arbitrage(sample_data)
