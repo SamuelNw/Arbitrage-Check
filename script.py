@@ -6,7 +6,7 @@ Links to articles on arbitrage betting:
 """
 # import sportpesa_data
 # import betika_data
-from typing import Union
+import csv
 
 
 # initial_data = sportpesa_data.get_sportpesa_data()
@@ -210,7 +210,7 @@ sample_data = [
 INV = 50000
 
 
-def calculate_arbitrage(arr) -> Union[str, dict]:
+def calculate_arbitrage(arr) -> list:
     """
     INFO: This function analyzes the data given and checks for arbitrage betting opportunities.
     - To calculate the arbitrage percentage, the following formula is used:
@@ -278,6 +278,8 @@ def calculate_arbitrage(arr) -> Union[str, dict]:
             print(f"Profit from Ksh {INV} = Ksh {i['Profit']}")
     print("\n" * 3)
 
+    return arr
+
 
 # Profit calculation
 def calculate_profit(A, B) -> float:
@@ -292,4 +294,23 @@ def calculate_stakes(A, B) -> list:
     return [A_stake, B_stake]
 
 
-calculate_arbitrage(sample_data)
+lst_1 = calculate_arbitrage(sample_data)
+
+
+# Compiled csv report
+def compiled_data(lst) -> None:
+    """
+    INFO: Returns a csv file with all the entries with their arbitrage percentage.
+    """
+    # g_header = ["Teams", "Event_id", "Start_time", "SP_GG",
+    #             "SP_NO_GG", "BK_GG", "BK_NO_GG", "Arb_Percentage"]
+    g_header = ["teams", "start_time",
+                "event_id", "SP", "BK", "Arb_Percentage", "Profit", "Stakes"]
+    # a_header = g_header + ["Total_stake", "GG_ODDS", "NO_GG_ODDS"]
+    with open("all_entries.csv", "w", newline="") as f:
+        g_writer = csv.DictWriter(f, fieldnames=g_header, delimiter="|")
+        g_writer.writeheader()
+        g_writer.writerows(lst)
+
+
+compiled_data(lst_1)
