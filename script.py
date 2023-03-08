@@ -4,8 +4,9 @@ import betika_data
 
 
 initial_data = sportpesa_data.get_sportpesa_data()
-updated_array = betika_data.add_betika_data(initial_data)
-
-
-for idx, item in enumerate(updated_array):
-    print(f"{idx} : {item}")
+if initial_data:
+    updated_array = betika_data.add_betika_data(initial_data)
+    for idx, item in enumerate(updated_array):
+        print(f"{idx} : {item}")
+else:
+    print("No data from the two sites")
