@@ -202,6 +202,8 @@ sample_data = [
         'event_id': 2444, 'SP': {'GG': 1.72, 'NO_GG': 1.93}, 'BK': None},
 ]
 
+INV = 50000
+
 
 def calculate_arbitrage(arr) -> list:
     """
@@ -209,10 +211,16 @@ def calculate_arbitrage(arr) -> list:
     - To calculate the arbitrage percentage, the following formula is used:
         Arbitrage % = ((1 / decimal odds for outcome A) x 100) + ((1 / decimal odds for outcome B) x 100)
     - If the result here is below 100% you have got yourself an arbitrage bet (Extremely rare stuff).
+
+    - In case you are lucky enough:
+        - Profit calculation is done as follows (Here, we use ksh 50,000):
+            # Profit = Investment - ((Investment / A_odds) + (Investment / B_odds))           
+
     """
 
     count = 0
     arbs = []
+    _profit = 0
     for entry in arr:
         # Get rid of entries with 'None' values
         if not "SP" in entry or not "BK" in entry or not entry["BK"]:
@@ -230,6 +238,8 @@ def calculate_arbitrage(arr) -> list:
         arbitrage_percentage = round(((1/gg) * 100) + ((1/no_gg) * 100), 2)
         entry["Arb_Percentage"] = arbitrage_percentage
         if arbitrage_percentage < 100.00:
+            _profit = calculate_profit(gg, no_gg)
+            entry["Profit"] = _profit
             arbs.append(entry)
             count += 1
 
@@ -239,10 +249,14 @@ def calculate_arbitrage(arr) -> list:
     if arbs:
         for i in arbs:
             print(i)
+            print(f"Profit from Ksh {INV} = Ksh {i['Profit']}")
     print("\n" * 3)
 
-    for entry in arr:
-        print(entry)
+
+# Profit calculation
+def calculate_profit(A, B) -> float:
+    profit = round(INV - ((INV / A) + (INV / B)), 2)
+    return profit
 
 
 calculate_arbitrage(sample_data)
