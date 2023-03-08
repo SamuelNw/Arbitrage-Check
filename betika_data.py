@@ -78,9 +78,8 @@ def add_betika_data(arr) -> list:
                             break
                         else:
                             print(
-                                f"{entry['teams']} are absent. Setting value to None")
+                                f"{entry['teams']} is absent. Setting value to None")
                             entry["BK"] = None
-                            continue
             except:
                 print(
                     f"No results for that {entry['teams']} on betika. 'BK' value shall equal None")
