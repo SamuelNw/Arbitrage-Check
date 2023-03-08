@@ -111,7 +111,6 @@ def add_betika_data(arr) -> list:
                     "GG": odds["GG"],
                     "NO_GG": odds["NO_GG"]
                 }
-            driver.get(HOME_PAGE_URL)
 
     finally:
         driver.quit()
