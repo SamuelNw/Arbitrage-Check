@@ -1,7 +1,12 @@
 # Use data from sportpesa to search through betika.com and combine all that to a csv file.
-# Link to article on arbitrage betting --> https://www.sbo.net/strategy/arbitrage-betting/
+"""
+Links to articles on arbitrage betting: 
+    --> https://www.sbo.net/strategy/arbitrage-betting/
+    --> https://thearbacademy.com/arbitrage-calculation/
+"""
 # import sportpesa_data
 # import betika_data
+from typing import Union
 
 
 # initial_data = sportpesa_data.get_sportpesa_data()
@@ -205,7 +210,7 @@ sample_data = [
 INV = 50000
 
 
-def calculate_arbitrage(arr) -> list:
+def calculate_arbitrage(arr) -> Union[str, dict]:
     """
     INFO: This function analyzes the data given and checks for arbitrage betting opportunities.
     - To calculate the arbitrage percentage, the following formula is used:
@@ -228,22 +233,31 @@ def calculate_arbitrage(arr) -> list:
         if not "SP" in entry or not "BK" in entry or not entry["BK"]:
             arr.remove(entry)
             continue
+
         # Get the bigger gg values
         gg = 0
+        gg_site = None
         no_gg = 0
+        no_gg_site = None
+
         if entry["SP"]["GG"] > entry["BK"]["GG"]:
             gg = entry["SP"]["GG"]
+            gg_site = "Sportpesa"
             no_gg = entry["BK"]["NO_GG"]
+            no_gg_site = "Betika"
         else:
             gg = entry["BK"]["GG"]
+            gg_site = "Betika"
             no_gg = entry["SP"]["NO_GG"]
+            no_gg_site = "Sportpesa"
+
         arbitrage_percentage = round(((1/gg) * 100) + ((1/no_gg) * 100), 2)
         entry["Arb_Percentage"] = arbitrage_percentage
         if arbitrage_percentage < 100.00:
             stakes = calculate_stakes(gg, no_gg)
             entry["Stakes"] = {
-                "GG": stakes[0],
-                "NO_GG": stakes[1]
+                "GG": [stakes[0], gg_site],
+                "NO_GG": [stakes[1], no_gg_site]
             }
 
             _profit = calculate_profit(gg, no_gg)
@@ -258,9 +272,9 @@ def calculate_arbitrage(arr) -> list:
     if arbs:
         for i in arbs:
             print(i)
-            print("\n-----------ANALYSIS----------\n")
+            print(f"\n-----------ANALYSIS----------(Total Stake --> {INV})\n")
             print(
-                f"Stake on GG: {i['Stakes']['GG']} \nStake on NO_GG: {i['Stakes']['NO_GG']}")
+                f"Stake on GG ({i['Stakes']['GG'][1]}): {i['Stakes']['GG'][0]} \nStake on NO_GG ({i['Stakes']['NO_GG'][1]}): {i['Stakes']['NO_GG'][0]}")
             print(f"Profit from Ksh {INV} = Ksh {i['Profit']}")
     print("\n" * 3)
 
