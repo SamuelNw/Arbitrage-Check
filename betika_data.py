@@ -134,18 +134,25 @@ def clean_search_input(string) -> str:
             longest words must be longer than 3 characters and shorter than 10 
             characters, else just use the next word.
         - If none of those work, do the same check for the second name.
-        - Randomly pick any three letter word available at that instance and take chances on it lol.
+        - Randomly pick any three letter word available at that instance and take chances on it, lol.
     """
 
     str_arr = string.split(" vs ")
     first_name = str_arr[0]
     second_name = str_arr[1]
 
+    some_exceptions = ["SOUTH", "NORTH", "WEST", "EAST"]
+
     # check first name:
     if not " " in first_name and len(first_name) > 3:
         return first_name
 
     if " " in first_name:
+        # for cases such as "SOUTH KOREA U23"
+        for name in some_exceptions:
+            if name in first_name.split(" "):
+                return f"{first_name.split(' ')[0]} {first_name.split(' ')[1]}"
+
         longest_word = max(first_name.split(" "), key=len)
         len_longest = len(longest_word)
         if len_longest >= 4 and len_longest <= 9:
