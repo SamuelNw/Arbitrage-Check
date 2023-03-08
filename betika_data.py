@@ -62,7 +62,8 @@ def add_betika_data(arr) -> list:
                 if event_rows:
                     for event in event_rows:
                         time_div = event.find_element(By.CLASS_NAME, "time")
-                        start_time = time_div.text.strip().split(", ")[1]
+                        start_time = time_div.text.split(
+                            "\n")[1].split(", ")[1]
 
                         if start_time == entry["start_time"]:
                             # get the right markets.
