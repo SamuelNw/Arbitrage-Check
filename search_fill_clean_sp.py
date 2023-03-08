@@ -137,3 +137,8 @@ def accept_cookies(drv, _timeout, cookies_div) -> None:
     else:
         print("Never found any cookie laws.")
     return
+
+
+if __name__ == "__main__":
+    arr = []
+    search_fill_clean(arr)

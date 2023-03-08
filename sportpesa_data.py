@@ -119,7 +119,8 @@ def accept_cookies(drv, _timeout, cookies_div) -> None:
     return
 
 
-res = get_sportpesa_data()
+if __name__ == "__main__":
+    res = get_sportpesa_data()
 
-for idx, entry in enumerate(res):
-    print(f"{idx} : {entry}")
+    for idx, entry in enumerate(res):
+        print(f"{idx} : {entry}")
