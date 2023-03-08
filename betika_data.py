@@ -48,38 +48,40 @@ def add_betika_data(arr) -> list:
             )
             _input = WebDriverWait(input_container, 5).until(
                 EC.presence_of_element_located((By.TAG_NAME, "input")))
+            _input.clear()
             _input.send_keys(clean_search_input(entry["teams"]))
             _input.send_keys(Keys.RETURN)
 
             # get target results:
             # Affirm it is the target event.
-            event_rows = ex_wait.until(
-                EC.presence_of_all_elements_located(
-                    (By.CLASS_NAME, "prebet-match"))
-            )
-            if event_rows:
-                for event in event_rows:
-                    time_div = event.find_element(By.CLASS_NAME, "time")
-                    start_time = time_div.text.strip().split(", ")[1]
+            try:
+                event_rows = ex_wait.until(
+                    EC.presence_of_all_elements_located(
+                        (By.CLASS_NAME, "prebet-match"))
+                )
+                if event_rows:
+                    for event in event_rows:
+                        time_div = event.find_element(By.CLASS_NAME, "time")
+                        start_time = time_div.text.strip().split(", ")[1]
 
-                    if start_time == entry["start_time"]:
-                        # get the right markets.
-                        more_markets_link = WebDriverWait(event, 5).until(
-                            EC.element_to_be_clickable((By.TAG_NAME, "a"))
-                        )
-                        more_markets_link.click()
+                        if start_time == entry["start_time"]:
+                            # get the right markets.
+                            more_markets_link = WebDriverWait(event, 5).until(
+                                EC.element_to_be_clickable((By.TAG_NAME, "a"))
+                            )
+                            more_markets_link.click()
 
-                        market_rows = ex_wait.until(
-                            EC.presence_of_all_elements_located(
-                                (By.CLASS_NAME, "market"))
-                        )
-                        break
-                    else:
-                        print(
-                            f"{entry['teams']} are absent. Setting value to None")
-                        entry["BK"] = None
-                        continue
-            else:
+                            market_rows = ex_wait.until(
+                                EC.presence_of_all_elements_located(
+                                    (By.CLASS_NAME, "market"))
+                            )
+                            break
+                        else:
+                            print(
+                                f"{entry['teams']} are absent. Setting value to None")
+                            entry["BK"] = None
+                            continue
+            except:
                 print(
                     f"No results for that {entry['teams']} on betika. 'BK' value shall equal None")
                 entry["BK"] = None
@@ -109,13 +111,11 @@ def add_betika_data(arr) -> list:
                     "GG": odds["GG"],
                     "NO_GG": odds["NO_GG"]
                 }
-
             driver.get(HOME_PAGE_URL)
 
     finally:
         driver.quit()
-
-    return arr
+        return arr
 
 
 # Clean search name
