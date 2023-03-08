@@ -47,8 +47,10 @@ def search_fill_clean(arr) -> list:
             search_name = name_in_url_format(entry["teams"].split(" vs ")[0])
 
             driver.get(SEARCH_PAGE_STATIC_URL + search_name)
+            driver.execute_script("window.scrollBy(0, 100)")
+            driver.implicitly_wait(5)
 
-            wait = WebDriverWait(driver, 5)
+            wait = WebDriverWait(driver, 10)
             match = wait.until(
                 EC.presence_of_element_located(
                     (By.CLASS_NAME, "event-markets-count-4"))
@@ -65,8 +67,8 @@ def search_fill_clean(arr) -> list:
                 By.CLASS_NAME, "event-info").text.split("\n")[2]
             _event_id = int(_event_id.split(" ")[1])
             if _event_id == entry['event_id']:
-                more_markets = match.find_element(
-                    By.CLASS_NAME, "event-extra")
+                more_markets = WebDriverWait(match, 10).until(
+                    EC.element_to_be_clickable((By.CLASS_NAME, "event-extra")))
                 more_markets.click()
 
                 # Search for divs with the gg market
@@ -107,8 +109,9 @@ def search_fill_clean(arr) -> list:
 
     finally:
         driver.quit()
+        return arr
 
-    return arr
+    # return arr
 
 
 # Get an input format of the search term as required.
