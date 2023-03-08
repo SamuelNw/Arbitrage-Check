@@ -170,3 +170,8 @@ def clean_search_input(string) -> str:
     # Worst case scenario eg --> "FC OSS vs FC AIK"
     random_idx = random.randint(0, 1)
     return max(str_arr[random_idx].split(" "), key=len)
+
+
+if __name__ == "__main__":
+    arr = []
+    add_betika_data(arr)
