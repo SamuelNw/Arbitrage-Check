@@ -5,4 +5,11 @@ __Arbitrage__ on it's own, means leveraging market differences between two selle
 ### What the Project Does
 This is thus a fun project done solely to practice scripting with selenium. It basically fetches data on events of the day from both [sportpesa](sportpesa.com) and [betika](betika.com). Data here being the teams involved in a match(event), the start time, the ID of the game on sportpesa, 'Both Teams To Score' odds on both sites, then calculates the arbitrage percentage of the valid entries collected, and writes all that to a csv file in the root folder of the project, as well as outputs any arbitrage possibility found in the said calculations. The output shows the number of entries checked,  possibilities found, and a break-down of investments and profits from any arbitrage scenario found. 
 #### Output (other than the csv file):
-
+![Command line output](/images/Sample_found_output.jpeg)
+As shown above, only one possibility out of 76 entries were found. Even worse, the event went ahead and got cancelled a little later that day. Tough stuff. See image below:
+![Event cancellation](/images/event_postponed.jpeg)
+### Getting the script to work
+- Clone the repo.
+- Create the virtual environment.
+- Install dependencies from the requirement.txt file.
+- Run the script.py file (the main file).
