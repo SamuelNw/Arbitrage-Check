@@ -15,3 +15,7 @@ As shown above, only one possibility out of 76 entries were found. Even worse, t
 - Create the virtual environment.
 - Install dependencies from the requirement.txt file.
 - Run the script.py file (the main file).
+### Limitations of the project
+- These possibilities are quite rare, and the ouput will almost always be zero.
+- Profits of such events are also very low, probably why you have never heard of this concept.
+- On the technical side, these sites are quite dynamic and errors easily come up.
