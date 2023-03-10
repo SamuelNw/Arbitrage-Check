@@ -63,11 +63,11 @@ def search_fill_clean(arr) -> list:
                 continue
 
             # Affirm that it is the same event as the one intended (By checking the ID).
-            _event_id = match.find_element(
-                By.CLASS_NAME, "event-info").text.split("\n")[2]
+            _event_id = WebDriverWait(match, 10).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "event-info"))).text.split("\n")[2]
             _event_id = int(_event_id.split(" ")[1])
             if _event_id == entry['event_id']:
-                more_markets = WebDriverWait(match, 10).until(
+                more_markets = WebDriverWait(match, 15).until(
                     EC.element_to_be_clickable((By.CLASS_NAME, "event-extra")))
                 more_markets.click()
 
@@ -78,7 +78,7 @@ def search_fill_clean(arr) -> list:
                 and eliminate events without this market, the first value of the returned elements text has to be:
                 'BOTH TEAMS TO SCORE'.
                 """
-                markets = WebDriverWait(driver, 5).until(
+                markets = WebDriverWait(driver, 10).until(
                     EC.presence_of_element_located(
                         (By.CLASS_NAME, "event-market-columns-2"))
                 )
