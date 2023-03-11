@@ -78,10 +78,14 @@ def search_fill_clean(arr) -> list:
                 and eliminate events without this market, the first value of the returned elements text has to be:
                 'BOTH TEAMS TO SCORE'.
                 """
-                markets = WebDriverWait(driver, 10).until(
+                markets = WebDriverWait(driver, 15).until(
                     EC.presence_of_element_located(
                         (By.CLASS_NAME, "event-market-columns-2"))
                 )
+
+                if not markets:
+                    # there are no desired markets here too
+                    continue
 
                 markets_result = markets.text.split("\n")
 
