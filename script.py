@@ -107,13 +107,33 @@ def compiled_data(lst) -> None:
     """
     INFO: Returns a csv file with all the entries with their arbitrage percentage.
     """
-    g_header = ["teams", "start_time",
-                "event_id", "SP", "BK", "Arb_Percentage", "Profit", "Stakes"]
 
-    with open("all_entries.csv", "w", newline="") as f:
-        g_writer = csv.DictWriter(f, fieldnames=g_header, delimiter="|")
-        g_writer.writeheader()
-        g_writer.writerows(lst)
+    header_values = ["Teams", "Start_time", "SP_event_id", "SP_GG_odds",
+                     "SP_NOGG_odds", "BK_GG_odds", "BK_NOGG_odds", "Arb_Percentage", "Profit",
+                     "SP_GG_stake", "SP_NOGG_stake", "BK_GG_stake", "BK_NOGG_stake",
+                     ]
+    with open("all_entries_new.csv", "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=header_values)
+        writer.writeheader()
+
+        for obj in lst:
+            row = {
+                "Teams": obj["teams"],
+                "Start_time": obj["start_time"],
+                "SP_event_id": obj["event_id"],
+                "SP_GG_odds": obj["SP"]["GG"],
+                "SP_NOGG_odds": obj["SP"]["NO_GG"],
+                "BK_GG_odds": obj["BK"]["GG"],
+                "BK_NOGG_odds": obj["BK"]["NO_GG"],
+                "Arb_Percentage": obj["Arb_Percentage"],
+                "Profit": obj.get("Profit", "N/A"),
+                "SP_GG_stake": obj["Stakes"]["GG"][0] if "Stakes" in obj and obj["Stakes"]["GG"][1] == "Sportpesa" else "N/A",
+                "SP_NOGG_stake": obj["Stakes"]["NO_GG"][0] if "Stakes" in obj and obj["Stakes"]["NO_GG"][1] == "Sportpesa" else "N/A",
+                "BK_GG_stake": obj["Stakes"]["GG"][0] if "Stakes" in obj and obj["Stakes"]["GG"][1] == "Betika" else "N/A",
+                "BK_NOGG_stake": obj["Stakes"]["NO_GG"][0] if "Stakes" in obj and obj["Stakes"]["NO_GG"][1] == "Betika" else "N/A"
+            }
+
+            writer.writerow(row)
 
 
 initial_data = sportpesa_data.get_sportpesa_data()
