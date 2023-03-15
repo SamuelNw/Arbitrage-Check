@@ -112,7 +112,7 @@ def compiled_data(lst) -> None:
                      "SP_NOGG_odds", "BK_GG_odds", "BK_NOGG_odds", "Arb_Percentage", "Profit",
                      "SP_GG_stake", "SP_NOGG_stake", "BK_GG_stake", "BK_NOGG_stake",
                      ]
-    with open("all_entries_new.csv", "w", newline="") as f:
+    with open("all_entries.csv", "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=header_values)
         writer.writeheader()
 
@@ -137,6 +137,7 @@ def compiled_data(lst) -> None:
 
 
 initial_data = sportpesa_data.get_sportpesa_data()
+
 if initial_data:
     updated_array = betika_data.add_betika_data(initial_data)
     for idx, item in enumerate(updated_array):
