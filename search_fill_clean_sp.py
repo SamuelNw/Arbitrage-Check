@@ -62,6 +62,14 @@ def search_fill_clean(arr) -> list:
                 arr.remove(entry)
                 continue
 
+            # if the match has started, there is a "prematch-to-live" div:
+            has_started = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "prematch-to-live")))
+            if has_started:
+                # skip
+                print(f"{entry['teams']} - has started")
+                continue
+
             # Affirm that it is the same event as the one intended (By checking the ID).
             _event_id = WebDriverWait(match, 10).until(
                 EC.presence_of_element_located((By.CLASS_NAME, "event-info"))).text.split("\n")[2]
