@@ -126,7 +126,6 @@ def clean_search_input(string) -> str:
         - Mostly shortens team names with more than one word (If both names are longer
         than 4 characters each, they shorten the longest and use the other).
         - Strings like 'U20', 'U23' are unacceptable
-
     Implemented solution:
         - First check the name of the first team:
             - if it has no spaces and is longer than four characters, use it.
@@ -172,6 +171,6 @@ def clean_search_input(string) -> str:
     return max(str_arr[random_idx].split(" "), key=len)
 
 
-if __name__ == "__main__":
-    arr = []
-    add_betika_data(arr)
+# if __name__ == "__main__":
+#     arr = []
+#     add_betika_data(arr)
