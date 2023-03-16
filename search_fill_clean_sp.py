@@ -2,9 +2,7 @@
 """
 This function (search_fill_clean) loops through the general data result and does the following on each entry:
     - Searches for the specific event on sportpesa.com. 
-    - If it finds the event and it is yet to start, get the desired markets (GG and NO_GG) and update that
-    entry to include this information as an object.
-    - Since some events lack this market, it scraps that whole entry from the resultant array as it is of no use.
+    - This version initiates a new array and appends only entries that have all the needed info.
     - Returns a comprehensive array of dictionaries with teams, start_time, ID, sp_markets (another dictionary).
 
     # Input --> [{'teams': 'AL-SHABBAB vs AL-BUDAIYA', 'start_time': '18:30', 'event_id': 3226}]
@@ -41,41 +39,44 @@ def search_fill_clean(arr) -> list:
 
     accept_cookies(driver, 5, COOKIES_ACCEPT_DIV)
 
+    # New array works better.
+    result = []
+
     try:
         for entry in arr:
             # Only search using the first team
             search_name = name_in_url_format(entry["teams"].split(" vs ")[0])
 
             driver.get(SEARCH_PAGE_STATIC_URL + search_name)
-            driver.execute_script("window.scrollBy(0, 100)")
-            driver.implicitly_wait(5)
+            driver.execute_script("window.scrollBy(0, 200)")
 
-            wait = WebDriverWait(driver, 10)
-            match = wait.until(
-                EC.presence_of_element_located(
-                    (By.CLASS_NAME, "event-markets-count-4"))
-            )
-
-            # Also, if the game has started, the event-markets-count-4 is no longer present.
-            if not match:
-                print(f"Match {entry['teams']} has started. Removing it..")
-                arr.remove(entry)
+            wait = WebDriverWait(driver, 5)
+            try:
+                match = wait.until(
+                    EC.presence_of_element_located(
+                        (By.CLASS_NAME, "event-markets-count-4"))
+                )
+            except:
                 continue
 
-            # if the match has started, there is a "prematch-to-live" div:
-            has_started = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.CLASS_NAME, "prematch-to-live")))
-            if has_started:
-                # skip
-                print(f"{entry['teams']} - has started")
-                continue
+            # Also if the match has started, there is a "prematch-to-live" div:
+            try:
+                has_started = wait.until(
+                    EC.presence_of_element_located((By.CLASS_NAME, "prematch-to-live")))
+                if has_started:
+                    # skip
+                    print(f"{entry['teams']} - has started")
+                    continue
+            except:
+                pass
 
             # Affirm that it is the same event as the one intended (By checking the ID).
-            _event_id = WebDriverWait(match, 10).until(
+            _event_id = WebDriverWait(match, 5).until(
                 EC.presence_of_element_located((By.CLASS_NAME, "event-info"))).text.split("\n")[2]
             _event_id = int(_event_id.split(" ")[1])
+
             if _event_id == entry['event_id']:
-                more_markets = WebDriverWait(match, 15).until(
+                more_markets = WebDriverWait(match, 5).until(
                     EC.element_to_be_clickable((By.CLASS_NAME, "event-extra")))
                 more_markets.click()
 
@@ -86,44 +87,45 @@ def search_fill_clean(arr) -> list:
                 and eliminate events without this market, the first value of the returned elements text has to be:
                 'BOTH TEAMS TO SCORE'.
                 """
-                markets = WebDriverWait(driver, 15).until(
-                    EC.presence_of_element_located(
-                        (By.CLASS_NAME, "event-market-columns-2"))
-                )
+                try:
+                    markets = wait.until(
+                        EC.presence_of_element_located(
+                            (By.CLASS_NAME, "event-market-columns-2"))
+                    )
 
-                if not markets:
-                    # there are no desired markets here too
+                    markets_result = markets.text.split("\n")
+
+                    if markets_result[0] != "BOTH TEAMS TO SCORE":
+                        # Event has no desired markets, move on.
+                        continue
+                    else:
+                        # It is the target div
+                        odds = {}
+                        odds["YES"] = float(markets_result[2])
+                        odds["NO"] = float(markets_result[4])
+
+                        # Update the entry with the newly fetched values
+                        entry["SP"] = {
+                            "GG": odds["YES"],
+                            "NO_GG": odds["NO"]
+                        }
+
+                        # only append the right entries to final result
+                        result.append(entry)
+
+                except:
+                    # failed at checking desired markets
                     continue
-
-                markets_result = markets.text.split("\n")
-
-                if markets_result[0] != "BOTH TEAMS TO SCORE":
-                    arr.remove(entry)
-                    print(
-                        f"\n{entry['teams']} - has no desired market, thus removed.")
-                else:
-                    odds = {"YES": 0, "NO": 0}
-                    odds["YES"] = float(markets_result[2])
-                    odds["NO"] = float(markets_result[4])
-
-                    # Update the entry with the newly fetched values
-                    entry["SP"] = {
-                        "GG": odds["YES"],
-                        "NO_GG": odds["NO"]
-                    }
 
             else:
                 # This particular event has probably already started and is not in the prematch bet events.
-                arr.remove(entry)
                 print(
-                    f"Removed the event {entry['teams']} from the array. It might have already started.")
+                    f"The event_id for: {entry['teams']} has not been found. It might have already started.")
                 continue
 
     finally:
         driver.quit()
-        return arr
-
-    # return arr
+        return result
 
 
 # Get an input format of the search term as required.
@@ -153,4 +155,6 @@ def accept_cookies(drv, _timeout, cookies_div) -> None:
 
 if __name__ == "__main__":
     arr = []
-    search_fill_clean(arr)
+    x = search_fill_clean(arr)
+    for idx, item in enumerate(x):
+        print(f"{idx} : {item}")
