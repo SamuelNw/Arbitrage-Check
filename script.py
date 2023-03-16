@@ -9,12 +9,6 @@ import betika_data
 import csv
 
 
-# For further research
-sample_data_arb = [
-    {'teams': 'NOMME KALJU vs FLORA TALLINN', 'start_time': '20:00', 'event_id': 5038,
-        'SP': {'GG': 1.72, 'NO_GG': 1.93}, 'BK': {'GG': 1.4, 'NO_GG': 2.6}},
-]
-
 INV = 50000
 
 
@@ -59,7 +53,8 @@ def calculate_arbitrage(arr) -> list:
             no_gg = entry["SP"]["NO_GG"]
             no_gg_site = "Sportpesa"
 
-        arbitrage_percentage = round(((1/gg) * 100) + ((1/no_gg) * 100), 2)
+        arbitrage_percentage = float("{:.2f}".format(
+            round(((1/gg) * 100) + ((1/no_gg) * 100), 2)))
         entry["Arb_Percentage"] = arbitrage_percentage
         if arbitrage_percentage < 100.00:
             stakes = calculate_stakes(gg, no_gg)
@@ -91,14 +86,14 @@ def calculate_arbitrage(arr) -> list:
 
 # Profit calculation
 def calculate_profit(A, B) -> float:
-    profit = round(INV - ((INV / A) + (INV / B)), 2)
+    profit = float("{:.2f}".format(round(INV - ((INV / A) + (INV / B)), 2)))
     return profit
 
 
 # Calculating stakes
 def calculate_stakes(A, B) -> list:
-    A_stake = round(INV / A, 2)
-    B_stake = round(INV / B, 2)
+    A_stake = float("{:.2f}".format(round(INV / A, 2)))
+    B_stake = float("{:.2f}".format(round(INV / B, 2)))
     return [A_stake, B_stake]
 
 
@@ -140,8 +135,6 @@ initial_data = sportpesa_data.get_sportpesa_data()
 
 if initial_data:
     updated_array = betika_data.add_betika_data(initial_data)
-    for idx, item in enumerate(updated_array):
-        print(f"{idx} : {item}")
     new_arr = calculate_arbitrage(updated_array)
     compiled_data(new_arr)
 else:
