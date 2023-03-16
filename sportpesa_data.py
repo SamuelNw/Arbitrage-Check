@@ -103,7 +103,7 @@ def get_sportpesa_data() -> list:
                 print(
                     f"Working with a list of {len(result)} entries. Hang tight...")
                 result = search_fill_clean_sp.search_fill_clean(result)
-                print("Process Completed.")
+                print("Done with sportpesa, moving on to betika...")
             else:
                 print("result is empty or invalid.")
 
