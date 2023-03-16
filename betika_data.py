@@ -8,6 +8,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from datetime import datetime
 import random
 
+
 # Betika Home Page Url
 HOME_PAGE_URL = "https://www.betika.com/en-ke/"
 
@@ -23,14 +24,17 @@ def add_betika_data(arr) -> list:
     driver.get(HOME_PAGE_URL)
     driver.maximize_window()
 
+    # Create a new array with only valid entries:
+    result = []
+
     try:
         for entry in arr:
             # Skip and Eliminate any started events.
             current_time = datetime.now().strftime("%H:%M")
             if entry["start_time"] < current_time:
                 print(
-                    f"{entry['teams']} has already started. 'BK' value shall equal None.")
-                entry["BK"] = None
+                    f"{entry['teams']} has already started. Entry thus, invalid")
+                # skip
                 continue
 
             ex_wait = WebDriverWait(driver, 5)
@@ -59,6 +63,7 @@ def add_betika_data(arr) -> list:
                     EC.presence_of_all_elements_located(
                         (By.CLASS_NAME, "prebet-match"))
                 )
+
                 if event_rows:
                     for event in event_rows:
                         time_div = event.find_element(By.CLASS_NAME, "time")
@@ -78,13 +83,10 @@ def add_betika_data(arr) -> list:
                             )
                             break
                         else:
-                            print(
-                                f"{entry['teams']} is absent. Setting value to None")
-                            entry["BK"] = None
+                            continue
             except:
                 print(
-                    f"No results for that {entry['teams']} on betika. 'BK' value shall equal None")
-                entry["BK"] = None
+                    f"No results for {entry['teams']} on betika.")
                 continue
 
             odds = {}
@@ -100,9 +102,6 @@ def add_betika_data(arr) -> list:
 
             if is_found == False:
                 # no gg markets found, thus remove the whole event from the input arr
-                print(
-                    f"Gg markets for {entry['teams']} not found. 'BK' shall equal None.")
-                entry["BK"] = None
                 continue
 
             # Update entry:
@@ -112,9 +111,11 @@ def add_betika_data(arr) -> list:
                     "NO_GG": odds["NO_GG"]
                 }
 
+                result.append(entry)
+
     finally:
         driver.quit()
-        return arr
+        return result
 
 
 # Clean search name
@@ -171,6 +172,8 @@ def clean_search_input(string) -> str:
     return max(str_arr[random_idx].split(" "), key=len)
 
 
-# if __name__ == "__main__":
-#     arr = []
-#     add_betika_data(arr)
+if __name__ == "__main__":
+    arr = []
+    x = add_betika_data(arr)
+    for idx, item in enumerate(x):
+        print(f"{idx} : {item}")
