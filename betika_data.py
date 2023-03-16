@@ -18,13 +18,6 @@ service = webdriver.chrome.service.Service(
 
 driver = webdriver.Chrome(service=service)
 
-sample_input_arr = [
-    {'teams': 'HAPOEL ACRE vs HAPOEL PETAH TIKVA', 'start_time': '20:00',
-        'event_id': 5858, 'SP': {'GG': 1.91, 'NO_GG': 1.74}},
-    {'teams': 'WALDHOF MANNHEIM vs SV ELVERSBERG', 'start_time': '21:00',
-        'event_id': 2868, 'SP': {'GG': 1.53, 'NO_GG': 2.25}}
-]
-
 
 def add_betika_data(arr) -> list:
     driver.get(HOME_PAGE_URL)
@@ -55,38 +48,40 @@ def add_betika_data(arr) -> list:
             )
             _input = WebDriverWait(input_container, 5).until(
                 EC.presence_of_element_located((By.TAG_NAME, "input")))
+            _input.clear()
             _input.send_keys(clean_search_input(entry["teams"]))
             _input.send_keys(Keys.RETURN)
 
             # get target results:
             # Affirm it is the target event.
-            event_rows = ex_wait.until(
-                EC.presence_of_all_elements_located(
-                    (By.CLASS_NAME, "prebet-match"))
-            )
-            if event_rows:
-                for event in event_rows:
-                    time_div = event.find_element(By.CLASS_NAME, "time")
-                    start_time = time_div.text.strip().split(", ")[1]
+            try:
+                event_rows = ex_wait.until(
+                    EC.presence_of_all_elements_located(
+                        (By.CLASS_NAME, "prebet-match"))
+                )
+                if event_rows:
+                    for event in event_rows:
+                        time_div = event.find_element(By.CLASS_NAME, "time")
+                        start_time = time_div.text.split(
+                            "\n")[1].split(", ")[1]
 
-                    if start_time == entry["start_time"]:
-                        # get the right markets.
-                        more_markets_link = WebDriverWait(event, 5).until(
-                            EC.element_to_be_clickable((By.TAG_NAME, "a"))
-                        )
-                        more_markets_link.click()
+                        if start_time == entry["start_time"]:
+                            # get the right markets.
+                            more_markets_link = WebDriverWait(event, 5).until(
+                                EC.element_to_be_clickable((By.TAG_NAME, "a"))
+                            )
+                            more_markets_link.click()
 
-                        market_rows = ex_wait.until(
-                            EC.presence_of_all_elements_located(
-                                (By.CLASS_NAME, "market"))
-                        )
-                        break
-                    else:
-                        print(
-                            f"{entry['teams']} are absent. Setting value to None")
-                        entry["BK"] = None
-                        continue
-            else:
+                            market_rows = ex_wait.until(
+                                EC.presence_of_all_elements_located(
+                                    (By.CLASS_NAME, "market"))
+                            )
+                            break
+                        else:
+                            print(
+                                f"{entry['teams']} is absent. Setting value to None")
+                            entry["BK"] = None
+            except:
                 print(
                     f"No results for that {entry['teams']} on betika. 'BK' value shall equal None")
                 entry["BK"] = None
@@ -117,12 +112,9 @@ def add_betika_data(arr) -> list:
                     "NO_GG": odds["NO_GG"]
                 }
 
-            driver.get(HOME_PAGE_URL)
-
     finally:
         driver.quit()
-
-    return arr
+        return arr
 
 
 # Clean search name
@@ -134,7 +126,6 @@ def clean_search_input(string) -> str:
         - Mostly shortens team names with more than one word (If both names are longer
         than 4 characters each, they shorten the longest and use the other).
         - Strings like 'U20', 'U23' are unacceptable
-
     Implemented solution:
         - First check the name of the first team:
             - if it has no spaces and is longer than four characters, use it.
@@ -142,18 +133,25 @@ def clean_search_input(string) -> str:
             longest words must be longer than 3 characters and shorter than 10 
             characters, else just use the next word.
         - If none of those work, do the same check for the second name.
-        - Randomly pick any three letter word available at that instance and take chances on it lol.
+        - Randomly pick any three letter word available at that instance and take chances on it, lol.
     """
 
     str_arr = string.split(" vs ")
     first_name = str_arr[0]
     second_name = str_arr[1]
 
+    some_exceptions = ["SOUTH", "NORTH", "WEST", "EAST"]
+
     # check first name:
     if not " " in first_name and len(first_name) > 3:
         return first_name
 
     if " " in first_name:
+        # for cases such as "SOUTH KOREA U23"
+        for name in some_exceptions:
+            if name in first_name.split(" "):
+                return f"{first_name.split(' ')[0]} {first_name.split(' ')[1]}"
+
         longest_word = max(first_name.split(" "), key=len)
         len_longest = len(longest_word)
         if len_longest >= 4 and len_longest <= 9:
@@ -173,4 +171,6 @@ def clean_search_input(string) -> str:
     return max(str_arr[random_idx].split(" "), key=len)
 
 
-print(add_betika_data(sample_input_arr))
+# if __name__ == "__main__":
+#     arr = []
+#     add_betika_data(arr)

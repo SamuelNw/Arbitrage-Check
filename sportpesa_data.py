@@ -57,47 +57,55 @@ def get_sportpesa_data() -> list:
         result = []
 
         event_totals = 15
-        # Get content from as many pages as ones available
-        for idx in range(len(available_pages[1:])):
 
-            # Get all the event rows
-            event_rows = driver.find_elements(
-                By.CLASS_NAME, "event-markets-count-4")
+        try:
+            # Get content from as many pages as ones available
+            for idx in range(len(available_pages[1:])):
 
-            # Get the start_time, ID and names of teams in each the match
-            for event in event_rows:
-                event_info = event.find_element(By.CLASS_NAME, "event-info")
-                entry_data = event_info.text.split("\n")
+                # Scroll to the bottom to ensure all events load
+                driver.execute_script(
+                    "window.scrollTo(0, document.body.scrollHeight)")
 
-                event_names = event.find_element(By.CLASS_NAME, "event-names")
-                entry_names = event_names.text.split("\n")
+                # Get all the event rows
+                event_rows = WebDriverWait(driver, 10).until(
+                    EC.presence_of_all_elements_located((By.CLASS_NAME, "event-markets-count-4")))
 
-                entry = {}
-                entry["teams"] = f"{entry_names[0]} vs {entry_names[1]}"
-                entry["start_time"] = f"{entry_data[0]}"
-                entry["event_id"] = int(entry_data[2].split(" ")[1])
+                # Get the start_time, ID and names of teams in each the match
+                for event in event_rows:
+                    event_info = event.find_element(
+                        By.CLASS_NAME, "event-info")
+                    entry_data = event_info.text.split("\n")
 
-                result.append(entry)
+                    event_names = event.find_element(
+                        By.CLASS_NAME, "event-names")
+                    entry_names = event_names.text.split("\n")
 
-            # Get the URL for the next page
-            next_page_url = NEXT_PAGE_STATIC_URL + str(event_totals)
+                    entry = {}
+                    entry["teams"] = f"{entry_names[0]} vs {entry_names[1]}"
+                    entry["start_time"] = f"{entry_data[0]}"
+                    entry["event_id"] = int(entry_data[2].split(" ")[1])
 
-            # Navigate to the next page
-            driver.get(next_page_url)
+                    result.append(entry)
 
-            event_totals += 15          # Total number of events sportpesa loads per page
+                # Get the URL for the next page
+                next_page_url = NEXT_PAGE_STATIC_URL + str(event_totals)
 
-            if idx == len(available_pages) - 1:
-                driver.quit()
+                # Navigate to the next page
+                driver.get(next_page_url)
 
-        # refill result if result is not empty
-        if result:
-            print(
-                f"Working with a list of {len(result)} entries. Hang tight...")
-            result = search_fill_clean_sp.search_fill_clean(result)
-            print("Process Completed.")
-        else:
-            print("result is empty or invalid.")
+                event_totals += 15          # Total number of events sportpesa loads per page
+
+                if idx == len(available_pages) - 1:
+                    driver.quit()
+        finally:
+            # refill result if result is not empty
+            if result:
+                print(
+                    f"Working with a list of {len(result)} entries. Hang tight...")
+                result = search_fill_clean_sp.search_fill_clean(result)
+                print("Process Completed.")
+            else:
+                print("result is empty or invalid.")
 
     finally:
         driver.quit()
@@ -119,7 +127,8 @@ def accept_cookies(drv, _timeout, cookies_div) -> None:
     return
 
 
-res = get_sportpesa_data()
+if __name__ == "__main__":
+    res = get_sportpesa_data()
 
-for idx, entry in enumerate(res):
-    print(f"{idx} : {entry}")
+    for idx, entry in enumerate(res):
+        print(f"{idx} : {entry}")
