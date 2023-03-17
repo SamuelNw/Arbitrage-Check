@@ -20,3 +20,4 @@ As shown above, only one possibility out of 76 entries were found. Even worse, t
 - Profits of such events are also very low, probably why you have never heard of this concept.
 - On the technical side, these sites are quite dynamic and errors easily come up.
 - There are still more bugs and need for better error handling (in progress)
+- Depending on the number of events, the program might take several minutes to complete.
