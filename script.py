@@ -5,8 +5,9 @@ Links to articles on arbitrage betting:
     --> https://thearbacademy.com/arbitrage-calculation/
 """
 import sportpesa_data
-import betika_data
 import csv
+import pandas as pd
+import os
 
 
 INV = 50000
@@ -97,7 +98,40 @@ def calculate_stakes(A, B) -> list:
     return [A_stake, B_stake]
 
 
-# Compiled csv report
+# Adjust the columns of the final excel file
+def adjust_csv(csv_file):
+    try:
+        # Check if the file exists
+        if not os.path.exists(csv_file):
+            raise ValueError("File does not exist: {}".format(csv_file))
+
+        # Read the CSV file
+        df = pd.read_csv(csv_file)
+
+        # Check if the CSV file contains any data
+        if df.empty:
+            raise ValueError("CSV file is empty: {}".format(csv_file))
+
+        # Iterate over each column and find the maximum length of the values in that column and the header
+        column_widths = {}
+        for column in df.columns:
+            max_length = df[column].astype(str).str.len().max()
+            header_length = len(column) + 2  # Alil extra space for the headers
+            column_widths[column] = max(max_length, header_length)
+
+        # Update the column widths in the Excel file
+        excel_file = os.path.splitext(csv_file)[0] + '.xlsx'
+        writer = pd.ExcelWriter(excel_file, engine='xlsxwriter')
+        df.to_excel(writer, index=False)
+        worksheet = writer.sheets['Sheet1']
+        for i, column in enumerate(df.columns):
+            worksheet.set_column(i, i, column_widths[column])
+        writer.save()
+    except Exception as e:
+        print("Error: {}".format(e))
+
+
+# Compiled report in excel format
 def compiled_data(lst) -> None:
     """
     INFO: Returns a csv file with all the entries with their arbitrage percentage.
@@ -130,12 +164,16 @@ def compiled_data(lst) -> None:
 
             writer.writerow(row)
 
+    adjust_csv("all_entries.csv")
 
-initial_data = sportpesa_data.get_sportpesa_data()
 
-if initial_data:
-    updated_array = betika_data.add_betika_data(initial_data)
-    new_arr = calculate_arbitrage(updated_array)
-    compiled_data(new_arr)
-else:
-    print("No data from the two sites")
+if __name__ == "__main__":
+    initial_data = sportpesa_data.get_sportpesa_data()
+
+    if initial_data:
+        import betika_data
+        updated_array = betika_data.add_betika_data(initial_data)
+        new_arr = calculate_arbitrage(updated_array)
+        compiled_data(new_arr)
+    else:
+        print("No data from the two sites")
