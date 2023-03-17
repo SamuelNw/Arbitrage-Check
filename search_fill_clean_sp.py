@@ -48,9 +48,6 @@ def search_fill_clean(arr) -> list:
             # Skip and Eliminate any started events.
             current_time = datetime.now().strftime("%H:%M")
             if entry["start_time"] <= current_time:
-                print(
-                    f"{entry['teams']} has already started. Entry thus, invalid")
-                # skip
                 continue
 
             # Only search using the first team
@@ -116,9 +113,7 @@ def search_fill_clean(arr) -> list:
                     continue
 
             else:
-                # This particular event has probably already started and is not in the prematch bet events.
-                print(
-                    f"The event_id for: {entry['teams']} has not been found. It might have already started.")
+                # This particular event may have been scrapped.
                 continue
 
     finally:

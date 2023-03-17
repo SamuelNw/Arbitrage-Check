@@ -32,9 +32,6 @@ def add_betika_data(arr) -> list:
             # Skip and Eliminate any started events.
             current_time = datetime.now().strftime("%H:%M")
             if entry["start_time"] < current_time:
-                print(
-                    f"{entry['teams']} has already started. Entry thus, invalid")
-                # skip
                 continue
 
             ex_wait = WebDriverWait(driver, 5)
@@ -95,8 +92,7 @@ def add_betika_data(arr) -> list:
                                 # go back one step
                                 driver.back()
             except:
-                print(
-                    f"No results for {entry['teams']} on betika.")
+                pass
 
             odds = {}
             is_found = False
@@ -112,7 +108,7 @@ def add_betika_data(arr) -> list:
                         break
                 if is_found == False:
                     # no gg markets found, thus remove the whole event from the input arr
-                    print(f"No target markets for {entry['teams']}")
+                    pass
 
                 # Update entry:
                 if odds:
