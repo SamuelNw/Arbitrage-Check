@@ -147,7 +147,7 @@ def clean_search_input(string) -> str:
     first_name = str_arr[0]
     second_name = str_arr[1]
 
-    some_exceptions = ["SOUTH", "NORTH", "WEST", "EAST"]
+    some_exceptions = ["SOUTH", "NORTH", "WEST", "EAST", "YOUTH"]
 
     # check first name:
     if not " " in first_name and len(first_name) > 3:
