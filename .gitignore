@@ -5,3 +5,6 @@
 # files
 passwords.py
 all_entries.csv
+all_entries.xlsx
+test_result.py
+test_sample.py
