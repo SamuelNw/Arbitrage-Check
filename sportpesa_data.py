@@ -52,6 +52,9 @@ def get_sportpesa_data() -> list:
         next_buttons = pagination.find_elements(By.CLASS_NAME, "ng-binding")
 
         available_pages = [item.text for item in next_buttons]
+        a_len = len(available_pages)
+        print(
+            f"Found {a_len} pages. Expected entries to work on should be at least --> {(a_len - 1) * 15}")
 
         # Initiate an empty array to append dictionaries containing event info
         result = []
@@ -60,7 +63,7 @@ def get_sportpesa_data() -> list:
 
         try:
             # Get content from as many pages as ones available
-            for idx in range(len(available_pages[1:])):
+            for idx in range(a_len - 1):
 
                 # Scroll to the bottom to ensure all events load
                 driver.execute_script(
@@ -95,8 +98,10 @@ def get_sportpesa_data() -> list:
 
                 event_totals += 15          # Total number of events sportpesa loads per page
 
-                if idx == len(available_pages) - 1:
+                if idx == a_len - 1:
                     driver.quit()
+                else:
+                    continue
         finally:
             # refill result if result is not empty
             if result:
