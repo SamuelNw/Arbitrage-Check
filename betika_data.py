@@ -65,7 +65,10 @@ def add_betika_data(arr) -> list:
                         (By.CLASS_NAME, "prebet-match"))
                 )
 
+                count = 0
                 if event_rows:
+                    events = len(event_rows)
+                    count += 1
                     for event in event_rows:
                         time_div = event.find_element(
                             By.CLASS_NAME, "time")
@@ -86,7 +89,11 @@ def add_betika_data(arr) -> list:
                             )
                             break
                         else:
-                            continue
+                            if not count == events:
+                                continue    # check all present events
+                            else:
+                                # go back one step
+                                driver.back()
             except:
                 print(
                     f"No results for {entry['teams']} on betika.")
