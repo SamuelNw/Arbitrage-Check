@@ -58,6 +58,7 @@ def add_betika_data(arr) -> list:
 
             # get target results:
             # Affirm it is the target event.
+            market_rows = None
             try:
                 event_rows = ex_wait.until(
                     EC.presence_of_all_elements_located(
@@ -89,31 +90,32 @@ def add_betika_data(arr) -> list:
             except:
                 print(
                     f"No results for {entry['teams']} on betika.")
-                continue
 
             odds = {}
             is_found = False
-            for market in market_rows:
-                # target markets found
-                market_text = market.text.split("\n")
-                if market_text[0] == "Both Teams To Score (Gg/ng)":
-                    odds["GG"] = float(market_text[2])
-                    odds["NO_GG"] = float(market_text[4])
-                    is_found = True
-                    break
 
-            if is_found == False:
-                # no gg markets found, thus remove the whole event from the input arr
-                continue
+            if market_rows:
+                for market in market_rows:
+                    # target markets found
+                    market_text = market.text.split("\n")
+                    if market_text[0] == "Both Teams To Score (Gg/ng)":
+                        odds["GG"] = float(market_text[2])
+                        odds["NO_GG"] = float(market_text[4])
+                        is_found = True
+                        break
+                if is_found == False:
+                    # no gg markets found, thus remove the whole event from the input arr
+                    print(f"No target markets for {entry['teams']}")
 
-            # Update entry:
-            if odds:
-                entry["BK"] = {
-                    "GG": odds["GG"],
-                    "NO_GG": odds["NO_GG"]
-                }
+                # Update entry:
+                if odds:
+                    entry["BK"] = {
+                        "GG": odds["GG"],
+                        "NO_GG": odds["NO_GG"]
+                    }
 
-                result.append(entry)
+                    result.append(entry)
+            continue
 
     finally:
         driver.quit()
