@@ -70,7 +70,7 @@ def get_sportpesa_data() -> list:
                     "window.scrollTo(0, document.body.scrollHeight)")
 
                 # Get all the event rows
-                event_rows = WebDriverWait(driver, 10).until(
+                event_rows = WebDriverWait(driver, 5).until(
                     EC.presence_of_all_elements_located((By.CLASS_NAME, "event-markets-count-4")))
 
                 # Get the start_time, ID and names of teams in each the match
