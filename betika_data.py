@@ -66,14 +66,16 @@ def add_betika_data(arr) -> list:
 
                 if event_rows:
                     for event in event_rows:
-                        time_div = event.find_element(By.CLASS_NAME, "time")
+                        time_div = event.find_element(
+                            By.CLASS_NAME, "time")
                         start_time = time_div.text.split(
                             "\n")[1].split(", ")[1]
 
                         if start_time == entry["start_time"]:
                             # get the right markets.
                             more_markets_link = WebDriverWait(event, 5).until(
-                                EC.element_to_be_clickable((By.TAG_NAME, "a"))
+                                EC.element_to_be_clickable(
+                                    (By.TAG_NAME, "a"))
                             )
                             more_markets_link.click()
 
@@ -134,6 +136,8 @@ def clean_search_input(string) -> str:
             longest words must be longer than 3 characters and shorter than 10 
             characters, else just use the next word.
         - If none of those work, do the same check for the second name.
+        - However, the name with the least number of spaces is one that is more likely to get
+        the expected results.
         - Randomly pick any three letter word available at that instance and take chances on it, lol.
     """
 
@@ -147,7 +151,11 @@ def clean_search_input(string) -> str:
     if not " " in first_name and len(first_name) > 3:
         return first_name
 
-    if " " in first_name:
+    # working with the name with least number of spaces:
+    first_name_spaces = first_name.count(" ")
+    second_name_spaces = second_name.count(" ")
+
+    if " " in first_name and first_name_spaces < second_name_spaces:
         # for cases such as "SOUTH KOREA U23"
         for name in some_exceptions:
             if name in first_name.split(" "):
@@ -162,7 +170,7 @@ def clean_search_input(string) -> str:
     if not " " in second_name and len(second_name) > 3:
         return second_name
 
-    if " " in second_name:
+    if " " in second_name and second_name_spaces < first_name_spaces:
         longest_word = max(second_name.split(" "), key=len)
         if len(longest_word) >= 4:
             return longest_word
