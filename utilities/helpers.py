@@ -147,3 +147,8 @@ def adjust_csv(csv_file):
         writer.save()
     except Exception as e:
         print("Error: {}".format(e))
+
+
+# function to round off numbers and ensure 2 decimal places:
+def round_float(num):
+    return float("{:.2f}".format(num))

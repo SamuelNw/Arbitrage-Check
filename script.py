@@ -4,7 +4,7 @@ Links to articles on arbitrage betting:
     --> https://www.sbo.net/strategy/arbitrage-betting/
     --> https://thearbacademy.com/arbitrage-calculation/
 """
-from .utilities.helpers import adjust_csv, round_float
+from utilities.helpers import adjust_csv, round_float
 import csv
 import utilities.sportpesa_data as sp
 
