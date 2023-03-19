@@ -50,7 +50,8 @@ def add_betika_data(arr) -> list:
             _input = WebDriverWait(input_container, 5).until(
                 EC.presence_of_element_located((By.TAG_NAME, "input")))
             _input.clear()
-            _input.send_keys(clean_search_input(entry["teams"]))
+            search_term = clean_search_input(entry["teams"])
+            _input.send_keys(search_term)
             _input.send_keys(Keys.RETURN)
 
             # get target results:
@@ -73,18 +74,24 @@ def add_betika_data(arr) -> list:
                             "\n")[1].split(", ")[1]
 
                         if start_time == entry["start_time"]:
-                            # get the right markets.
-                            more_markets_link = WebDriverWait(event, 5).until(
-                                EC.element_to_be_clickable(
-                                    (By.TAG_NAME, "a"))
-                            )
-                            more_markets_link.click()
+                            # team names are the 3rd and 4th elements:
+                            entry_text = list(event.text.split("\n"))
+                            team_names = entry_text[2:4]
 
-                            market_rows = ex_wait.until(
-                                EC.presence_of_all_elements_located(
-                                    (By.CLASS_NAME, "market"))
-                            )
-                            break
+                            # ONLY CARRY ON IF THE EVENTS VERIFY
+                            if verify(entry, search_term, team_names):
+                                # get the right markets.
+                                more_markets_link = WebDriverWait(event, 5).until(
+                                    EC.element_to_be_clickable(
+                                        (By.TAG_NAME, "a"))
+                                )
+                                more_markets_link.click()
+
+                                market_rows = ex_wait.until(
+                                    EC.presence_of_all_elements_located(
+                                        (By.CLASS_NAME, "market"))
+                                )
+                                break
                         else:
                             if not count == events:
                                 continue    # check all present events
@@ -183,6 +190,56 @@ def clean_search_input(string) -> str:
     # Worst case scenario eg --> "FC OSS vs FC AIK"
     random_idx = random.randint(0, 1)
     return max(str_arr[random_idx].split(" "), key=len)
+
+
+# Further event verification helper:
+def verify(entry, term_searched, teams) -> bool:
+    """
+    INFO: This function checks if besides the search term selected,
+    the other team's name is also in the current event being checked.
+    """
+    team_1 = teams[0].upper()
+    team_2 = teams[1].upper()
+    # case where both team names are just one word entries
+    if not " " in team_1 and " " not in team_2:
+        if term_searched == team_1:
+            if team_2 in entry["teams"]:
+                return True
+        elif term_searched == team_2:
+            if team_1 in entry["teams"]:
+                return True
+
+    # case where only one of the team names is a one word entry
+    if " " in team_1 and not " " in team_2:
+        if term_searched in team_1:
+            if team_2 in entry["teams"]:
+                return True
+        elif term_searched == team_2:
+            for name in list(team_1.split(" ")):
+                if name in entry["teams"]:
+                    return True
+    elif " " in team_2 and not " " in team_1:
+        if term_searched in team_2:
+            if team_1 in entry["teams"]:
+                return True
+        elif term_searched == team_1:
+            for name in list(team_2.split(" ")):
+                if name in entry["teams"]:
+                    return True
+
+    # case where both team names are more than a word entry.
+    if " " in team_1 and " " in team_2:
+        if term_searched in team_1:
+            for name in list(team_2.split(" ")):
+                if name in entry["teams"]:
+                    return True
+        elif term_searched in team_2:
+            for name in list(team_1.split(" ")):
+                if name in entry["teams"]:
+                    return True
+
+    # if all the above cases dont match:
+    return False
 
 
 if __name__ == "__main__":
