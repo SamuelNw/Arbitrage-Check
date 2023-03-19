@@ -5,7 +5,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 
-import search_fill_clean_sp
+from . import search_fill_clean_sp as sfp
 
 # Daily PreMatch events link.
 DAILY_EVENTS_URL = "https://www.ke.sportpesa.com/en/sports-betting/football-1/today-games/"
@@ -107,7 +107,7 @@ def get_sportpesa_data() -> list:
             if result:
                 print(
                     f"Working with a list of {len(result)} entries. Hang tight...")
-                result = search_fill_clean_sp.search_fill_clean(result)
+                result = sfp.search_fill_clean(result)
                 print(
                     f"Collected {len(result)} valid entries from sportpesa, moving on to betika...")
             else:
