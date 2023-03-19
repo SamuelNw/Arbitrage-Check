@@ -70,7 +70,7 @@ def get_sportpesa_data() -> list:
                     "window.scrollTo(0, document.body.scrollHeight)")
 
                 # Get all the event rows
-                event_rows = WebDriverWait(driver, 5).until(
+                event_rows = WebDriverWait(driver, 10).until(
                     EC.presence_of_all_elements_located((By.CLASS_NAME, "event-markets-count-4")))
 
                 # Get the start_time, ID and names of teams in each the match
@@ -108,7 +108,8 @@ def get_sportpesa_data() -> list:
                 print(
                     f"Working with a list of {len(result)} entries. Hang tight...")
                 result = search_fill_clean_sp.search_fill_clean(result)
-                print("Done with sportpesa, moving on to betika...")
+                print(
+                    f"Collected {len(result)} valid entries from sportpesa, moving on to betika...")
             else:
                 print("result is empty or invalid.")
 
