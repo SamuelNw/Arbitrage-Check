@@ -13,6 +13,10 @@ import os
 INV = 50000
 
 
+def round_float(num):
+    return float("{:.2f}".format(num))
+
+
 def calculate_arbitrage(arr) -> list:
     """
     INFO: This function analyzes the data given and checks for arbitrage betting opportunities.
@@ -54,9 +58,12 @@ def calculate_arbitrage(arr) -> list:
             no_gg = entry["SP"]["NO_GG"]
             no_gg_site = "Sportpesa"
 
-        arbitrage_percentage = float("{:.2f}".format(
-            round(((1/gg) * 100) + ((1/no_gg) * 100), 2)))
+        # arbitrage_percentage = float("{:.2f}".format(
+        #     round(((1/gg) * 100) + ((1/no_gg) * 100), 2)))
+        arb_p = ((1/gg) * 100) + ((1/no_gg) * 100)
+        arbitrage_percentage = round_float(arb_p)
         entry["Arb_Percentage"] = arbitrage_percentage
+
         if arbitrage_percentage < 100.00:
             stakes = calculate_stakes(gg, no_gg)
             entry["Stakes"] = {
@@ -87,14 +94,15 @@ def calculate_arbitrage(arr) -> list:
 
 # Profit calculation
 def calculate_profit(A, B) -> float:
-    profit = float("{:.2f}".format(round(INV - ((INV / A) + (INV / B)), 2)))
+    # profit = float("{:.2f}".format(round(INV - ((INV / A) + (INV / B)), 2)))
+    profit = round_float(INV - ((INV / A) + (INV / B)))
     return profit
 
 
 # Calculating stakes
 def calculate_stakes(A, B) -> list:
-    A_stake = float("{:.2f}".format(round(INV / A, 2)))
-    B_stake = float("{:.2f}".format(round(INV / B, 2)))
+    A_stake = round_float(INV / A, 2)
+    B_stake = round_float(INV / B, 2)
     return [A_stake, B_stake]
 
 
