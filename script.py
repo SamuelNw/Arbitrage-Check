@@ -4,7 +4,7 @@ Links to articles on arbitrage betting:
     --> https://www.sbo.net/strategy/arbitrage-betting/
     --> https://thearbacademy.com/arbitrage-calculation/
 """
-import sportpesa_data
+import utilities.sportpesa_data as sp
 import csv
 import pandas as pd
 import os
@@ -176,11 +176,11 @@ def compiled_data(lst) -> None:
 
 
 if __name__ == "__main__":
-    initial_data = sportpesa_data.get_sportpesa_data()
+    initial_data = sp.get_sportpesa_data()
 
     if initial_data:
-        import betika_data
-        updated_array = betika_data.add_betika_data(initial_data)
+        import utilities.betika_data as bd
+        updated_array = bd.add_betika_data(initial_data)
         new_arr = calculate_arbitrage(updated_array)
         compiled_data(new_arr)
     else:
