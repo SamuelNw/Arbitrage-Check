@@ -4,17 +4,12 @@ Links to articles on arbitrage betting:
     --> https://www.sbo.net/strategy/arbitrage-betting/
     --> https://thearbacademy.com/arbitrage-calculation/
 """
-import utilities.sportpesa_data as sp
+from .utilities.helpers import adjust_csv, round_float
 import csv
-import pandas as pd
-import os
+import utilities.sportpesa_data as sp
 
 
 INV = 50000
-
-
-def round_float(num):
-    return float("{:.2f}".format(num))
 
 
 def calculate_arbitrage(arr) -> list:
@@ -58,8 +53,6 @@ def calculate_arbitrage(arr) -> list:
             no_gg = entry["SP"]["NO_GG"]
             no_gg_site = "Sportpesa"
 
-        # arbitrage_percentage = float("{:.2f}".format(
-        #     round(((1/gg) * 100) + ((1/no_gg) * 100), 2)))
         arb_p = ((1/gg) * 100) + ((1/no_gg) * 100)
         arbitrage_percentage = round_float(arb_p)
         entry["Arb_Percentage"] = arbitrage_percentage
@@ -94,7 +87,6 @@ def calculate_arbitrage(arr) -> list:
 
 # Profit calculation
 def calculate_profit(A, B) -> float:
-    # profit = float("{:.2f}".format(round(INV - ((INV / A) + (INV / B)), 2)))
     profit = round_float(INV - ((INV / A) + (INV / B)))
     return profit
 
@@ -104,39 +96,6 @@ def calculate_stakes(A, B) -> list:
     A_stake = round_float(INV / A, 2)
     B_stake = round_float(INV / B, 2)
     return [A_stake, B_stake]
-
-
-# Adjust the columns of the final excel file
-def adjust_csv(csv_file):
-    try:
-        # Check if the file exists
-        if not os.path.exists(csv_file):
-            raise ValueError("File does not exist: {}".format(csv_file))
-
-        # Read the CSV file
-        df = pd.read_csv(csv_file)
-
-        # Check if the CSV file contains any data
-        if df.empty:
-            raise ValueError("CSV file is empty: {}".format(csv_file))
-
-        # Iterate over each column and find the maximum length of the values in that column and the header
-        column_widths = {}
-        for column in df.columns:
-            max_length = df[column].astype(str).str.len().max()
-            header_length = len(column) + 2  # Alil extra space for the headers
-            column_widths[column] = max(max_length, header_length)
-
-        # Update the column widths in the Excel file
-        excel_file = os.path.splitext(csv_file)[0] + '.xlsx'
-        writer = pd.ExcelWriter(excel_file, engine='xlsxwriter')
-        df.to_excel(writer, index=False)
-        worksheet = writer.sheets['Sheet1']
-        for i, column in enumerate(df.columns):
-            worksheet.set_column(i, i, column_widths[column])
-        writer.save()
-    except Exception as e:
-        print("Error: {}".format(e))
 
 
 # Compiled report in excel format

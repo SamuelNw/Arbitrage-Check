@@ -1,5 +1,7 @@
 # Helper functions go here:
 import random
+import pandas as pd
+import os
 
 # Clean search name to use on the betika site:
 
@@ -111,3 +113,37 @@ def verify(entry, term_searched, teams) -> bool:
 
     # if all the above cases dont match:
     return False
+
+
+# Adjusting the column widths of the xlsx file
+# Adjust the columns of the final excel file
+def adjust_csv(csv_file):
+    try:
+        # Check if the file exists
+        if not os.path.exists(csv_file):
+            raise ValueError("File does not exist: {}".format(csv_file))
+
+        # Read the CSV file
+        df = pd.read_csv(csv_file)
+
+        # Check if the CSV file contains any data
+        if df.empty:
+            raise ValueError("CSV file is empty: {}".format(csv_file))
+
+        # Iterate over each column and find the maximum length of the values in that column and the header
+        column_widths = {}
+        for column in df.columns:
+            max_length = df[column].astype(str).str.len().max()
+            header_length = len(column) + 2  # Alil extra space for the headers
+            column_widths[column] = max(max_length, header_length)
+
+        # Update the column widths in the Excel file
+        excel_file = os.path.splitext(csv_file)[0] + '.xlsx'
+        writer = pd.ExcelWriter(excel_file, engine='xlsxwriter')
+        df.to_excel(writer, index=False)
+        worksheet = writer.sheets['Sheet1']
+        for i, column in enumerate(df.columns):
+            worksheet.set_column(i, i, column_widths[column])
+        writer.save()
+    except Exception as e:
+        print("Error: {}".format(e))
