@@ -6,7 +6,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 from datetime import datetime
-from helpers import clean_search_input, verify
+from utilities.helpers import clean_search_input, verify
 
 
 # Betika Home Page Url
