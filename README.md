@@ -21,3 +21,7 @@ As shown above, only one possibility out of 76 entries were found. Even worse, t
 - On the technical side, these sites are quite dynamic and errors easily come up.
 - There are still more bugs and need for better error handling (in progress)
 - Depending on the number of events, the program might take several minutes to complete.
+
+
+## INFO:
+- The main branch has some bug as a result of the rearrangement of files, in the mean time, checkout the "tander" branch that works just fine.
