@@ -23,5 +23,5 @@ As shown above, only one possibility out of 76 entries were found. Even worse, t
 - Depending on the number of events, the program might take several minutes to complete.
 
 
-## INFO:
-- The main branch has some bug as a result of the rearrangement of files, in the mean time, checkout the "tander" branch that works just fine.
+#### INFO:
+- The "tander" branch contains the code up to just before the rearrangement of files. It works just fine, too.
