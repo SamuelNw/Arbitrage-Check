@@ -18,7 +18,7 @@ def clean_search_input(string) -> str:
         - First check the name of the first team:
             - if it has no spaces and is longer than four characters, use it.
             - if it has a space, get the longest word of those present, and these
-            longest words must be longer than 3 characters and shorter than 10 
+            longest words must be longer than 3 characters and shorter than 10
             characters, else just use the next word.
         - If none of those work, do the same check for the second name.
         - However, the name with the least number of spaces is one that is more likely to get
@@ -144,7 +144,7 @@ def adjust_csv(csv_file):
         worksheet = writer.sheets['Sheet1']
         for i, column in enumerate(df.columns):
             worksheet.set_column(i, i, column_widths[column])
-        writer.save()
+        writer.close()
     except Exception as e:
         print("Error: {}".format(e))
 
