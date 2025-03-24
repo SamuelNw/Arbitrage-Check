@@ -14,7 +14,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
 from datetime import datetime
 
 # Home Page
@@ -24,13 +24,14 @@ SEARCH_PAGE_STATIC_URL = "https://www.ke.sportpesa.com/search?sportId=1&text="
 # Class name to the cookies div.
 COOKIES_ACCEPT_DIV = "cookies-law-info-content"
 
+driver_path = "/Users/sam/Desktop/Cipher/Ciphy/Arbitrage-Check/drivers/chromedriver"
 
-# Create a new ChromeDriver service object
-service = webdriver.chrome.service.Service(
-    executable_path=ChromeDriverManager().install())
+# Create a service object
+service = Service(executable_path=driver_path)
 
-# Start a new Chrome browser instance using the service object
+# Create a driver with the service:
 driver = webdriver.Chrome(service=service)
+
 
 
 def search_fill_clean(arr) -> list:
@@ -62,13 +63,13 @@ def search_fill_clean(arr) -> list:
                     EC.presence_of_element_located(
                         (By.CLASS_NAME, "event-markets-count-4"))
                 )
-            except:
+            except Exception:
                 continue
 
             # Affirm that it is the same event as the one intended (By checking the ID).
             _event_id = WebDriverWait(match, 5).until(
-                EC.presence_of_element_located((By.CLASS_NAME, "event-info"))).text.split("\n")[2]
-            _event_id = int(_event_id.split(" ")[1])
+                EC.presence_of_element_located((By.CLASS_NAME, "event-date-id"))).text.split(" ")[5]
+            _event_id = int(_event_id)
 
             if _event_id == entry['event_id']:
                 more_markets = WebDriverWait(match, 5).until(
@@ -108,7 +109,7 @@ def search_fill_clean(arr) -> list:
                         # only append the right entries to final result
                         result.append(entry)
 
-                except:
+                except Exception:
                     # failed at checking desired markets
                     continue
 
@@ -118,7 +119,8 @@ def search_fill_clean(arr) -> list:
 
     finally:
         driver.quit()
-        return result
+        
+    return result
 
 
 # Get an input format of the search term as required.
@@ -128,7 +130,7 @@ def name_in_url_format(name) -> str:
     - If the name has no spaces in it, it goes as is.
     - If any space is present, replace it with the string '%20' --> what the target site does.
     """
-    if not " " in name:
+    if " " not in name:
         return name
     return name.replace(" ", "%20")
 
@@ -143,7 +145,6 @@ def accept_cookies(drv, _timeout, cookies_div) -> None:
         cookie_button.click()
     else:
         print("Never found any cookie laws.")
-    return
 
 
 if __name__ == "__main__":

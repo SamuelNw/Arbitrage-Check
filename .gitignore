@@ -1,6 +1,7 @@
 # folders
 *__pycache__
 *env
+.DS_Store
 
 # files
 passwords.py

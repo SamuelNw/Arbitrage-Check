@@ -19,6 +19,11 @@ def calculate_arbitrage(arr) -> list:
         Arbitrage % = ((1 / decimal odds for outcome A) x 100) + ((1 / decimal odds for outcome B) x 100)
     - If the result here is below 100% you have got yourself an arbitrage bet (Extremely rare stuff).
 
+    (Additional Info): Given the above analogy, you would think that we'd have to calculate the Arbitrage percentage
+    using sportpesa gg as outcome A and betika no_gg as outcome B, and also calculate the same using sportpesa no_gg
+    as outcome A and betika gg as outcome B, so that we can use the percentage that is the lower of the two. However,
+    all we have to do, is pick the larger gg value from the two sites, and use the no_gg value from the other site.
+
     - In case you are lucky enough:
         - Profit calculation is done as follows (Here, we use ksh 50,000):
             # Profit = Investment - ((Investment / A_odds) + (Investment / B_odds))           
@@ -32,7 +37,7 @@ def calculate_arbitrage(arr) -> list:
     _profit = 0
     for entry in arr:
         # Get rid of entries with 'None' values
-        if not "SP" in entry or not "BK" in entry or not entry["BK"]:
+        if "SP" not in entry or "BK" not in entry or not entry["BK"]:
             arr.remove(entry)
             continue
 
@@ -86,16 +91,14 @@ def calculate_arbitrage(arr) -> list:
 
 
 # Profit calculation
-def calculate_profit(A, B) -> float:
-    profit = round_float(INV - ((INV / A) + (INV / B)))
+def calculate_profit(outcome_a_odds, outcome_b_odds) -> float:
+    profit = round_float(INV - ((INV / outcome_a_odds) + (INV / outcome_b_odds)))
     return profit
 
 
 # Calculating stakes
-def calculate_stakes(A, B) -> list:
-    A_stake = round_float(INV / A, 2)
-    B_stake = round_float(INV / B, 2)
-    return [A_stake, B_stake]
+def calculate_stakes(outcome_a_odds, outcome_b_odds) -> list:
+    return [round_float(INV / outcome_a_odds, 2), round_float(INV / outcome_b_odds, 2)]
 
 
 # Compiled report in excel format

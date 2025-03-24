@@ -4,7 +4,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
 from datetime import datetime
 from utilities.helpers import clean_search_input, verify
 
@@ -13,10 +13,12 @@ from utilities.helpers import clean_search_input, verify
 HOME_PAGE_URL = "https://www.betika.com/en-ke/"
 
 
-service = webdriver.chrome.service.Service(
-    executable_path=ChromeDriverManager().install()
-)
+driver_path = "/Users/sam/Desktop/Cipher/Ciphy/Arbitrage-Check/drivers/chromedriver"
 
+# Create a service object
+service = Service(executable_path=driver_path)
+
+# Create a driver with the service:
 driver = webdriver.Chrome(service=service)
 
 
@@ -94,7 +96,7 @@ def add_betika_data(arr) -> list:
                     if market_rows == None:
                         driver.back()
                         continue
-            except:
+            except Exception:
                 pass
 
             odds = {}
@@ -125,7 +127,8 @@ def add_betika_data(arr) -> list:
 
     finally:
         driver.quit()
-        return result
+    
+    return result
 
 
 if __name__ == "__main__":

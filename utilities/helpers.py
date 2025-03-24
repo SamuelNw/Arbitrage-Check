@@ -33,7 +33,7 @@ def clean_search_input(string) -> str:
     some_exceptions = ["SOUTH", "NORTH", "WEST", "EAST", "YOUTH"]
 
     # check first name:
-    if not " " in first_name and len(first_name) > 3:
+    if " " not in first_name and len(first_name) > 3:
         return first_name
 
     # working with the name with least number of spaces:
@@ -52,7 +52,7 @@ def clean_search_input(string) -> str:
             return longest_word
 
     # Check second name
-    if not " " in second_name and len(second_name) > 3:
+    if " " not in second_name and len(second_name) > 3:
         return second_name
 
     if " " in second_name and second_name_spaces < first_name_spaces:
@@ -74,7 +74,7 @@ def verify(entry, term_searched, teams) -> bool:
     team_1 = teams[0].upper()
     team_2 = teams[1].upper()
     # case where both team names are just one word entries
-    if not " " in team_1 and " " not in team_2:
+    if " " not in team_1 and " " not in team_2:
         if term_searched == team_1:
             if team_2 in entry["teams"]:
                 return True
@@ -83,7 +83,7 @@ def verify(entry, term_searched, teams) -> bool:
                 return True
 
     # case where only one of the team names is a one word entry
-    if " " in team_1 and not " " in team_2:
+    if " " in team_1 and " " not in team_2:
         if term_searched in team_1:
             if team_2 in entry["teams"]:
                 return True
@@ -91,7 +91,7 @@ def verify(entry, term_searched, teams) -> bool:
             for name in list(team_1.split(" ")):
                 if name in entry["teams"]:
                     return True
-    elif " " in team_2 and not " " in team_1:
+    elif " " in team_2 and " " not in team_1:
         if term_searched in team_2:
             if team_1 in entry["teams"]:
                 return True

@@ -3,7 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
 
 from . import search_fill_clean_sp as sfp
 
@@ -14,11 +14,12 @@ NEXT_PAGE_STATIC_URL = "https://www.ke.sportpesa.com/en/sports-betting/football-
 # Class name to the cookies div.
 COOKIES_ACCEPT_DIV = "cookies-law-info-content"
 
-# Create a new ChromeDriver service object
-service = webdriver.chrome.service.Service(
-    executable_path=ChromeDriverManager().install())
+driver_path = "/Users/sam/Desktop/Cipher/Ciphy/Arbitrage-Check/drivers/chromedriver"
 
-# Start a new Chrome browser instance using the service object
+# Create a service object
+service = Service(executable_path=driver_path)
+
+# Create a driver with the service:
 driver = webdriver.Chrome(service=service)
 
 
@@ -63,7 +64,7 @@ def get_sportpesa_data() -> list:
 
         try:
             # Get content from as many pages as ones available
-            for idx in range(a_len - 1):
+            for idx in range(a_len):
 
                 # Scroll to the bottom to ensure all events load
                 driver.execute_script(
@@ -76,8 +77,8 @@ def get_sportpesa_data() -> list:
                 # Get the start_time, ID and names of teams in each the match
                 for event in event_rows:
                     event_info = event.find_element(
-                        By.CLASS_NAME, "event-info")
-                    entry_data = event_info.text.split("\n")
+                        By.CLASS_NAME, "event-date-id")
+                    entry_data = event_info.text.split(" ")
 
                     event_names = event.find_element(
                         By.CLASS_NAME, "event-names")
@@ -85,8 +86,8 @@ def get_sportpesa_data() -> list:
 
                     entry = {}
                     entry["teams"] = f"{entry_names[0]} vs {entry_names[1]}"
-                    entry["start_time"] = f"{entry_data[0]}"
-                    entry["event_id"] = int(entry_data[2].split(" ")[1])
+                    entry["start_time"] = f"{entry_data[2]}"
+                    entry["event_id"] = int(entry_data[5])
 
                     result.append(entry)
 
@@ -130,7 +131,6 @@ def accept_cookies(drv, _timeout, cookies_div) -> None:
         cookie_button.click()
     else:
         print("Never found any cookie laws.")
-    return
 
 
 if __name__ == "__main__":
