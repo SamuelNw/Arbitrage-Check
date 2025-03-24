@@ -34,7 +34,3 @@ As shown above, only one possibility out of 76 entries were found. Even worse, t
 -   I used these two sites cause they are more prominent in the market meaning lower rate of changes in UI elements, BUT a few breaking changes
     have been noted before.
 -   As of now, it works with python versions of 3.11 and below.
-
-#### INFO:
-
--   The "tander" branch contains the code up to just before the rearrangement of files. It works just fine, too.
