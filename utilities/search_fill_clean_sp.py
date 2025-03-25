@@ -44,16 +44,12 @@ def search_fill_clean(arr) -> list:
     # New array works better.
     result = []
 
-    print("Array before autofilling with odds: ", arr)
-
     try:
         for entry in arr:
             # Skip and Eliminate any started events.
             current_time = datetime.now().strftime("%H:%M")
             if entry["start_time"] <= current_time:
                 continue
-
-            print(entry, "\n")
 
             # Only search using the first team
             search_name = name_in_url_format(entry["teams"].split(" vs ")[0])
