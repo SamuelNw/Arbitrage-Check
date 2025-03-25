@@ -44,12 +44,16 @@ def search_fill_clean(arr) -> list:
     # New array works better.
     result = []
 
+    print("Array before autofilling with odds: ", arr)
+
     try:
         for entry in arr:
             # Skip and Eliminate any started events.
             current_time = datetime.now().strftime("%H:%M")
             if entry["start_time"] <= current_time:
                 continue
+
+            print(entry, "\n")
 
             # Only search using the first team
             search_name = name_in_url_format(entry["teams"].split(" vs ")[0])
@@ -68,7 +72,7 @@ def search_fill_clean(arr) -> list:
 
             # Affirm that it is the same event as the one intended (By checking the ID).
             _event_id = WebDriverWait(match, 5).until(
-                EC.presence_of_element_located((By.CLASS_NAME, "event-date-id"))).text.split(" ")[5]
+                EC.presence_of_element_located((By.CLASS_NAME, "event-date-id"))).text.split(" ")[-1]
             _event_id = int(_event_id)
 
             if _event_id == entry['event_id']:
