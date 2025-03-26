@@ -66,10 +66,20 @@ def search_fill_clean(arr) -> list:
             except Exception:
                 continue
 
+            print("Entry: ", entry, "\n")
+
             # Affirm that it is the same event as the one intended (By checking the ID).
-            _event_id = WebDriverWait(match, 5).until(
-                EC.presence_of_element_located((By.CLASS_NAME, "event-date-id"))).text.split(" ")[-1]
-            _event_id = int(_event_id)
+            """
+                The DOM element holding event info has the event ID as the last item, but the length of the 
+                items list is not always six, thus the try block below.
+            """
+            _event_id = None
+            try:
+                _event_id = WebDriverWait(match, 5).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, "event-date-id"))).text.split(" ")[5]
+                _event_id = int(_event_id)
+            except Exception:
+                continue
 
             if _event_id == entry['event_id']:
                 more_markets = WebDriverWait(match, 5).until(

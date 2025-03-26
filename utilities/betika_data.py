@@ -53,6 +53,8 @@ def add_betika_data(arr) -> list:
                 EC.presence_of_element_located((By.TAG_NAME, "input")))
             _input.clear()
             search_term = clean_search_input(entry["teams"])
+            print("Entry: ", entry, "\n")
+            print("Search Term: ", search_term, "\n")
             _input.send_keys(search_term)
             _input.send_keys(Keys.RETURN)
 
