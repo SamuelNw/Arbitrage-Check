@@ -66,7 +66,6 @@ def calculate_arbitrage(arr) -> list:
             no_gg_site = "Sportpesa"
 
         arb_p = ((1 / gg) * 100) + ((1 / no_gg) * 100)
-        print(arb_p)
         arbitrage_percentage = round_float(arb_p)
         entry["Arb_Percentage"] = arbitrage_percentage
 
