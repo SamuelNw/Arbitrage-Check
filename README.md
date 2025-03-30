@@ -25,6 +25,8 @@ As shown above, only one possibility out of 76 entries were found. Even worse, t
 -   Install dependencies from the requirement.txt file.
 -   Run the script.py file (the main file).
 
+-   Example outputs will be found in the `/example_outputs` folder.
+
 ### Limitations of the project
 
 -   These possibilities are quite rare, and the ouput will almost always be zero.
