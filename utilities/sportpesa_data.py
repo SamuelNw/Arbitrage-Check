@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
 
 from . import search_fill_clean_sp as sfp
+import time
 
 # Daily PreMatch events link.
 DAILY_EVENTS_URL = "https://www.ke.sportpesa.com/en/sports-betting/football-1/today-games/"
@@ -16,16 +17,22 @@ COOKIES_ACCEPT_DIV = "cookies-law-info-content"
 
 driver_path = "/Users/sam/Desktop/Cipher/Ciphy/Arbitrage-Check/drivers/chromedriver"
 
-# Create a service object
+# Create a service object with anti-detection flags and memory optimizations
 service = Service(executable_path=driver_path)
+chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument('--disable-blink-features=AutomationControlled')
+chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+chrome_options.add_argument('--disable-dev-shm-usage')
+chrome_options.add_argument('--no-sandbox')
+chrome_options.add_argument('--disable-gpu')
 
 # Create a driver with the service:
 driver = webdriver.Chrome(service=service)
 
 
 """
-This function (get_general_data) returns an array of events with only general data.
-General data here refers to:
+- This function (get_sportpesa_data()) returns an array of events with only general data from sportpesa.
+- General data here refers to:
     - Involved teams in an event. 
     - Starting time of the event. 
     - ID of the said event.
@@ -37,15 +44,18 @@ def get_sportpesa_data() -> list:
     driver.get(DAILY_EVENTS_URL)
     driver.maximize_window()
 
+    time.sleep(2)
+
     # Accept Cookies --> cause why not do this too.
-    accept_cookies(driver, 5, COOKIES_ACCEPT_DIV)
+    accept_cookies(driver, 10, COOKIES_ACCEPT_DIV)
 
     try:
         # Scroll to the bottom to ensure all events load
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight)")
+        time.sleep(1)
 
         # Get a list with the number of available pages of events.
-        pagination = WebDriverWait(driver, 5).until(
+        pagination = WebDriverWait(driver, 50).until(
             EC.presence_of_element_located(
                 (By.CLASS_NAME, "event-list-pagination"))
         )
@@ -69,10 +79,13 @@ def get_sportpesa_data() -> list:
                 # Scroll to the bottom to ensure all events load
                 driver.execute_script(
                     "window.scrollTo(0, document.body.scrollHeight)")
+                time.sleep(1)
 
                 # Get all the event rows
-                event_rows = WebDriverWait(driver, 10).until(
+                event_rows = WebDriverWait(driver, 50).until(
                     EC.presence_of_all_elements_located((By.CLASS_NAME, "event-markets-count-4")))
+                
+                time.sleep(1)
 
                 # Get the start_time, ID and names of teams in each the match
                 for event in event_rows:
@@ -107,10 +120,10 @@ def get_sportpesa_data() -> list:
             # refill result if result is not empty
             if result:
                 print(
-                    f"Working with a list of {len(result)} entries. Hang tight...")
+                    f"Working with a list of {len(result)} entries. Hang tight...", "\n")
                 result = sfp.search_fill_clean(result)
                 print(
-                    f"Collected {len(result)} valid entries from sportpesa, moving on to betika...")
+                    f"Collected {len(result)} valid entries from sportpesa, moving on to betika..."," \n")
             else:
                 print("result is empty or invalid.")
 
