@@ -7,7 +7,7 @@ from utilities.helpers import adjust_csv, round_float
 import csv
 import utilities.sportpesa_data as sp
 
-INV = 50000
+DESIRED_WINNINGS = 50000     # Desired Winnings
 
 
 def calculate_arbitrage(arr) -> list:
@@ -91,14 +91,14 @@ def calculate_arbitrage(arr) -> list:
         for i in arbs:
             print(i)
             print(
-                f"\n-----------ANALYSIS----------(Total Stake --> {INV})\n"
+                f"\n-----------ANALYSIS----------(Total Stake --> {DESIRED_WINNINGS})\n"
             )
             print(
                 f"Stake on GG ({i['Stakes']['GG'][1]}): \
 {i['Stakes']['GG'][0]} \nStake on NO_GG ({i['Stakes']['NO_GG'][1]}): \
 {i['Stakes']['NO_GG'][0]}"
             )
-            print(f"Profit from Ksh {INV} = Ksh {i['Profit']}")
+            print(f"Profit from Ksh {DESIRED_WINNINGS} = Ksh {i['Profit']}")
     print("\n" * 2)
 
     return arr
@@ -107,15 +107,15 @@ def calculate_arbitrage(arr) -> list:
 # Profit calculation
 def calculate_profit(outcome_a_odds, outcome_b_odds) -> float:
     profit = round_float(
-        INV - ((INV / outcome_a_odds) + (INV / outcome_b_odds)))
+        DESIRED_WINNINGS - ((DESIRED_WINNINGS / outcome_a_odds) + (DESIRED_WINNINGS / outcome_b_odds)))
     return profit
 
 
 # Calculating stakes
 def calculate_stakes(outcome_a_odds, outcome_b_odds) -> list:
     return [
-        round_float(INV / outcome_a_odds),
-        round_float(INV / outcome_b_odds),
+        round_float(DESIRED_WINNINGS / outcome_a_odds),
+        round_float(DESIRED_WINNINGS / outcome_b_odds),
     ]
 
 
