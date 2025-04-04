@@ -6,6 +6,7 @@ Links to articles on arbitrage betting:
 from utilities.helpers import adjust_csv, round_float
 import csv
 import utilities.sportpesa_data as sp
+import json
 
 DESIRED_WINNINGS = 50000     # Desired Winnings
 
@@ -210,10 +211,19 @@ def write_updated_data_to_csv(data, filename="updated_data.csv"):
     adjust_csv(filename)
 
 
+
+
 if __name__ == "__main__":
     initial_data = sp.get_sportpesa_data()
-
+        
     if initial_data:
+        # Write the initial data to a file in case of an error after successful scraping.
+        initial_data_file = "initial_data.json"
+        with open(initial_data_file, "w") as f:
+            json.dump(initial_data, f, indent=4)
+        print(f"Successfully saved initial data to {initial_data_file}")
+
+        # Proceed to betika data scraping.
         import utilities.betika_data as bd
 
         updated_array = bd.add_betika_data(initial_data)
@@ -223,3 +233,5 @@ if __name__ == "__main__":
         compiled_data(new_arr)
     else:
         print("No data from the two sites")
+
+

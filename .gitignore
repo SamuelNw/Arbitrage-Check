@@ -9,5 +9,6 @@ passwords.py
 *all_entries.xlsx
 *updated_data.xlsx
 *updated_data.csv
+*initial_data.json
 test_result.py
 test_sample.py
