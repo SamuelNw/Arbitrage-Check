@@ -7,6 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
 from datetime import datetime
 import time
+import re
 
 
 # Betika Home Page Url
@@ -113,34 +114,38 @@ def add_betika_data(arr) -> list:
                                 ", ")[1]
 
                             if start_time == entry["start_time"]:
-                                # Open market details
-                                more_markets_link = WebDriverWait(
-                                    event, 5).until(
-                                    EC.element_to_be_clickable(
-                                        (By.TAG_NAME, "a"))
-                                )
-                                more_markets_link.click()
-                                time.sleep(1)  # Allow markets to load
+                                # Verify the event using search terms and regex
+                                event_teams = event.find_element(By.CLASS_NAME, "prebet-match__teams").text
+                                matching_terms = [term for term in search_terms if re.search(rf"\b{term}\b", event_teams, re.IGNORECASE)]
+                                if len(matching_terms) >= 2:  # Ensure at least two terms match
+                                    # Open market details
+                                    more_markets_link = WebDriverWait(
+                                        event, 5).until(
+                                        EC.element_to_be_clickable(
+                                            (By.TAG_NAME, "a"))
+                                    )
+                                    more_markets_link.click()
+                                    time.sleep(1)  # Allow markets to load
 
-                                # Find GG/NG markets
-                                market_rows = ex_wait.until(
-                                    EC.presence_of_all_elements_located(
-                                        (By.CLASS_NAME, "market"))
-                                )
+                                    # Find GG/NG markets
+                                    market_rows = ex_wait.until(
+                                        EC.presence_of_all_elements_located(
+                                            (By.CLASS_NAME, "market"))
+                                    )
 
-                                for market in market_rows:
-                                    market_text = market.text.split("\n")
-                                    if market_text[0] == \
-                                            "Both Teams To Score (Gg/ng)":
-                                        odds["GG"] = float(market_text[2])
-                                        odds["NO_GG"] = float(market_text[4])
-                                        is_found = True
-                                        break
+                                    for market in market_rows:
+                                        market_text = market.text.split("\n")
+                                        if market_text[0] == \
+                                                "Both Teams To Score (Gg/ng)":
+                                            odds["GG"] = float(market_text[2])
+                                            odds["NO_GG"] = float(market_text[4])
+                                            is_found = True
+                                            break
 
-                                if is_found:
-                                    break  # Exit event loop if found
+                                    if is_found:
+                                        break  # Exit event loop if found
 
-                                driver.back()  # Go back if no GG market found
+                                    driver.back()  # Go back if no GG market found
 
                         except Exception:
                             continue
