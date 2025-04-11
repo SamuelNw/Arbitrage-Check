@@ -210,9 +210,6 @@ def write_updated_data_to_csv(data, filename="updated_data.csv"):
 
     adjust_csv(filename)
 
-
-
-
 if __name__ == "__main__":
     initial_data = sp.get_sportpesa_data()
         
